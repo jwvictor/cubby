@@ -68,7 +68,7 @@ View and update a blob.
 
 `get` opens the blob's body contents in the viewer configured in `options.viewer`. By default, this is set to `editor`, which opens the blob in your system's default editor (as defined by `$EDITOR`). It can also be set to `stdout` or `viewer` for read-only use cases.
 
-Nested blobs can be retrieved by using colon-delimited paths, e.g. `root-blob:child-blob`.
+Nested blobs can be retrieved by using colon-delimited paths of form `root-blob:child-blob` -- e.g. `notes:meeting notes`.
 
 Usage: `cubby get <key>`
 
