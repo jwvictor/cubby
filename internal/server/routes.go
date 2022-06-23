@@ -388,7 +388,15 @@ func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, ErrNotFound)
 		return
 	}
-	if err := render.Render(w, r, &types.PostResponse{Blobs: []*types.Blob{relBlob}, Posts: []*types.Post{post}, Body: relBlob.Data}); err != nil {
+	var body string
+	var encBody []byte
+	if relBlob.IsEncryptedAndEmpty() {
+		encBody = relBlob.EncryptedBody().Data
+	} else {
+		body = relBlob.Data
+	}
+
+	if err := render.Render(w, r, &types.PostResponse{Blobs: []*types.Blob{relBlob}, Posts: []*types.Post{post}, Body: body, EncryptedBody: encBody}); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}

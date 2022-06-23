@@ -40,10 +40,10 @@ var putPublicationCmd = &cobra.Command{
 			return
 		}
 
-		if checkIfEncryptedAndEmpty(b) {
-			fmt.Printf("You are attempting to share a blob that has encrypted body text. Please create an unencrypted blob (-C=none) and share that instead.\n")
-			return
-		}
+		//if checkIfEncryptedAndEmpty(b) {
+		//	fmt.Printf("You are attempting to share a blob that has encrypted body text. Please create an unencrypted blob (-C=none) and share that instead.\n")
+		//	return
+		//}
 
 		postId := publishPostId
 		if postId == "" {

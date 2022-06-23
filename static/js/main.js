@@ -23,11 +23,21 @@ $(document).ready(function () {
     console.log("ready\n" + uri)
     $.get(uri, function(data) {
         let body = data["body"];
-        if(data["blobs"][0]["type"] === "markdown") {
-            let html = marked.parse(body);
-            $('#output').html(html);
+        if(body) {
+            // Plaintext share
+            if(data["blobs"][0]["type"] === "markdown") {
+                let html = marked.parse(body);
+                $('#output').html(html);
+            }
+        } else {
+            // Encrypted share
         }
         console.log(body)
         console.log(data)
+    })
+
+    $("#decrypt-btn").click(function(e) {
+        let pp = $('#passphrase').val();
+        console.log(`Got passphrase ${pp}`);
     })
 });

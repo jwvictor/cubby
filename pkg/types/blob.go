@@ -42,6 +42,26 @@ type Blob struct {
 	VersionHistory []*BlobHistoryItem     `json:"version_history,omitempty"`
 }
 
+func (blob *Blob) IsEncryptedAndEmpty() bool {
+	if blob.Data == "" {
+		for _, x := range blob.RawData {
+			if x.Type == EncryptedBody {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (blob *Blob) EncryptedBody() *BlobBinaryAttachment {
+	for _, x := range blob.RawData {
+		if x.Type == EncryptedBody {
+			return &x
+		}
+	}
+	return nil
+}
+
 type BlobSkeleton struct {
 	Id         string          `json:"id"`
 	Title      string          `json:"title"`
@@ -55,9 +75,10 @@ type BlobSkeleton struct {
 }
 
 type PostResponse struct {
-	Posts []*Post `json:"posts"`
-	Blobs []*Blob `json:"blobs,omitempty"`
-	Body  string  `json:"body,omitempty"`
+	Posts         []*Post `json:"posts"`
+	Blobs         []*Blob `json:"blobs,omitempty"`
+	Body          string  `json:"body,omitempty"`
+	EncryptedBody []byte  `json:"encrypted_body,omitempty"`
 }
 
 func (b *PostResponse) Render(w http.ResponseWriter, r *http.Request) error {
