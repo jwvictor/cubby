@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
+	url2 "net/url"
 	"strings"
 )
 
@@ -34,6 +35,10 @@ var putPublicationCmd = &cobra.Command{
 		}
 		blobId := args[0]
 		b, err := client.GetBlobById(blobId)
+		if b == nil {
+			fmt.Printf("Could not find blob by ID: %s (%s)\n", blobId, err.Error())
+			return
+		}
 
 		if checkIfEncryptedAndEmpty(b) {
 			fmt.Printf("You are attempting to share a blob that has encrypted body text. Please create an unencrypted blob (-C=none) and share that instead.\n")
@@ -76,7 +81,7 @@ var putPublicationCmd = &cobra.Command{
 			fmt.Printf("Error publishing post: %s\n", err.Error())
 			return
 		} else {
-			fmt.Printf("Published successfully.")
+			fmt.Printf("Published successfully, getting URL...\n")
 		}
 
 		userDat, err := client.UserProfile()
@@ -86,8 +91,9 @@ var putPublicationCmd = &cobra.Command{
 		}
 
 		host, port := viper.GetString(CfgHost), viper.GetInt(CfgPort)
-		url := fmt.Sprintf("%s:%d/v1/post/%s/%s", host, port, userDat.DisplayName, pubPostId)
-		fmt.Printf("%s\n", url)
+		url := fmt.Sprintf("%s:%d/v1/post/%s/%s", host, port, url2.QueryEscape(userDat.DisplayName), url2.QueryEscape(pubPostId))
+		urlView := fmt.Sprintf("%s:%d/v1/post/%s/%s/view", host, port, url2.QueryEscape(userDat.DisplayName), url2.QueryEscape(pubPostId))
+		fmt.Printf("Web: %s\nAPI: %s\n", urlView, url)
 	},
 }
 

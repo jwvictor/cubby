@@ -393,7 +393,7 @@ func (t *StaticFileProvider) _checkNewBlobUniquenessUnsafe(blob *types.Blob) err
 		parent := t._getBlobByIdUnsafe(blob.OwnerId, blob.ParentId)
 		for _, child := range parent.ChildIds {
 			childBlob := t._getBlobByIdUnsafe(blob.OwnerId, child)
-			if childBlob.Title == blob.Title {
+			if childBlob.Title == blob.Title && (!childBlob.Deleted) {
 				return errors.New("NameCollision")
 			}
 		}
@@ -401,7 +401,7 @@ func (t *StaticFileProvider) _checkNewBlobUniquenessUnsafe(blob *types.Blob) err
 		// Check uniqueness at root
 		userData := t.data[blob.OwnerId]
 		for _, other := range userData {
-			if blob.Title == other.Title {
+			if blob.Title == other.Title && (!other.Deleted) {
 				return errors.New("NameCollision")
 			}
 		}

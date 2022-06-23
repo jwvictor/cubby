@@ -9,8 +9,10 @@ import (
 	"github.com/jwvictor/cubby/internal/data"
 	"github.com/jwvictor/cubby/internal/users"
 	"github.com/jwvictor/cubby/pkg/types"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -24,6 +26,11 @@ type Server struct {
 	dataProvider data.CubbyDataProvider
 	jwtAuth      *jwtauth.JWTAuth
 	userProvider users.UserProvider
+	staticData   staticData
+}
+
+type staticData struct {
+	shareHtml []byte
 }
 
 type ErrResponse struct {
@@ -49,6 +56,21 @@ func ErrRender(err error) render.Renderer {
 	}
 }
 
+func mimeType(fn string) string {
+	fnl := strings.ToLower(fn)
+	if strings.HasSuffix(fnl, ".js") {
+		return "application/json"
+	} else if strings.HasSuffix(fnl, ".css") {
+		return "text/css"
+	} else if strings.HasSuffix(fnl, ".html") {
+		return "text/html"
+	} else if strings.HasSuffix(fnl, ".png") {
+		return "image/png"
+	}
+
+	return "text/plain"
+}
+
 func NewServer(portNum int) *Server {
 	usersStore, err := users.NewUsersFileStore("cubby-users.json")
 	if err != nil {
@@ -62,13 +84,36 @@ func NewServer(portNum int) *Server {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("404 - nothing here"))
 	})
+
+	// TODO - parameterize this? Infer path of binary?
+	shareHtml, err := ioutil.ReadFile("./static/share.html")
+	if err != nil {
+		panic(err)
+	}
+
 	server := &Server{
 		portNum:      portNum,
 		router:       router,
 		dataProvider: data.NewStaticFileProvider(context.Background(), "./data"),
 		jwtAuth:      tokenAuth,
 		userProvider: usersStore,
+		staticData:   staticData{shareHtml: shareHtml},
 	}
+	router.Route("/static", func(staticRouter chi.Router) {
+		staticRouter.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+			fname := "./static/" + strings.TrimPrefix(r.URL.Path, "/static/")
+			bs, err := ioutil.ReadFile(fname)
+			if err != nil {
+				log.Printf("Failed to open file: %s\n", fname)
+				w.WriteHeader(404)
+				w.Write([]byte("not found: " + fname))
+			}
+			mt := mimeType(fname)
+			//log.Printf("MIME type for %s: %s\n", fname, mt)
+			w.Header().Add("Content-Type", mt)
+			w.Write(bs)
+		})
+	})
 	router.Route("/v1", func(v1Router chi.Router) {
 		// Authenticated post routes
 		v1Router.Route("/posts", func(postsRouter chi.Router) {
@@ -87,6 +132,7 @@ func NewServer(portNum int) *Server {
 			postRouter.Route("/{ownerName}/{postId}", func(postRouter chi.Router) {
 				postRouter.Use(server.PostCtx)
 				postRouter.Get("/", server.GetPost)
+				postRouter.Get("/view", server.ViewPost)
 			})
 		})
 		v1Router.Route("/blobs", func(blobsRouter chi.Router) {
@@ -319,6 +365,21 @@ func (s *Server) DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) ViewPost(w http.ResponseWriter, r *http.Request) {
+	post := r.Context().Value("post").(*types.Post)
+	relBlob := s.dataProvider.GetBlob(post.BlobId, post.OwnerId) // this has been shared to me so this is ok
+	log.Printf("Got blob for post (view): %v\n", relBlob)
+	if relBlob == nil {
+		render.Render(w, r, ErrNotFound)
+		return
+	}
+	_, err := w.Write([]byte(s.staticData.shareHtml))
+	if err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
+}
+
 func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value("post").(*types.Post)
 	relBlob := s.dataProvider.GetBlob(post.BlobId, post.OwnerId) // this has been shared to me so this is ok
@@ -327,7 +388,7 @@ func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, ErrNotFound)
 		return
 	}
-	if err := render.Render(w, r, &types.PostResponse{Posts: []*types.Post{post}, Body: relBlob.Data}); err != nil {
+	if err := render.Render(w, r, &types.PostResponse{Blobs: []*types.Blob{relBlob}, Posts: []*types.Post{post}, Body: relBlob.Data}); err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}

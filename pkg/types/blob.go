@@ -56,6 +56,7 @@ type BlobSkeleton struct {
 
 type PostResponse struct {
 	Posts []*Post `json:"posts"`
+	Blobs []*Blob `json:"blobs,omitempty"`
 	Body  string  `json:"body,omitempty"`
 }
 

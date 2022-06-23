@@ -1,5 +1,5 @@
-# Cubby
-Cubby is a _secure_ blob storage tool optimized for command-line users that can function as a personal organizer, configuration mechanism, or publishing system, among many other things.
+# Cubby: a personal data storage tool for command-line power users
+Cubby is a _secure_ blob storage tool optimized for command-line users that can function as a personal organizer, note-taking tool, time tracker, secret sharing platform, configuration mechanism, or blog publishing system, among many other things.
 
 In Cubby, users can read or write blobs like so:
 
