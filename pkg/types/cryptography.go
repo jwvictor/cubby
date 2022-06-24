@@ -27,57 +27,47 @@ func EncryptSymmetric(body, key []byte) ([]byte, error) {
 	// gcm or Galois/Counter Mode, is a mode of operation
 	// for symmetric key cryptographic block ciphers
 	// - https://en.wikipedia.org/wiki/Galois/Counter_Mode
-	gcm, err := cipher.NewGCM(c)
-	// if any error generating new GCM
-	// handle them
-	if err != nil {
-		return nil, err
-	}
+	//gcm, err := cipher.NewGCM(c)
 
-	// creates a new byte array the size of the nonce
-	// which must be passed to Seal
-	nonce := make([]byte, gcm.NonceSize())
-	// populates our nonce with a cryptographically secure
+	//iv := make([]byte, aes.BlockSize)
+	//if _, err := rand.Read(iv); err != nil {
+	//	return nil, err
+	//}
+
+	iv := make([]byte, aes.BlockSize)
+	// populates our IV with a cryptographically secure
 	// random sequence
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+	if _, err = io.ReadFull(rand.Reader, iv); err != nil {
 		return nil, err
 	}
 
-	// here we encrypt our text using the Seal function
-	// Seal encrypts and authenticates plaintext, authenticates the
-	// additional data and appends the result to dst, returning the updated
-	// slice. The nonce must be NonceSize() bytes long and unique for all
-	// time, for a given key.
-	result := gcm.Seal(nonce, nonce, body, nil)
+	stream := cipher.NewOFB(c, iv)
+	out := make([]byte, len(body))
+	stream.XORKeyStream(out, body)
+
+	var result []byte = iv
+	result = append(result, out...)
 
 	return result, nil
 }
 
-func DecryptSymmetric(ciphertext, key []byte) ([]byte, error) {
+func DecryptSymmetric(encdata, key []byte) ([]byte, error) {
 	c, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 
-	gcm, err := cipher.NewGCM(c)
-	if err != nil {
-		return nil, err
-	}
+	iv := encdata[:aes.BlockSize]
+	ciphertext := encdata[aes.BlockSize:]
 
-	nonceSize := gcm.NonceSize()
-	if len(ciphertext) < nonceSize {
-		return nil, err
-	}
+	stream := cipher.NewOFB(c, iv)
 
-	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		return nil, err
-	}
-	return plaintext, nil
+	out := make([]byte, len(ciphertext))
+	stream.XORKeyStream(out, ciphertext)
+	return out, nil
 }
 
 func DeriveSymmetricKey(key string) ([]byte, error) {
-	rig, err := scrypt.Key([]byte(key), []byte(SaltString), 32768, 8, 1, 32)
+	rig, err := scrypt.Key([]byte(key), []byte(SaltString), 16384, 8, 1, 32)
 	return rig, err
 }

@@ -14,6 +14,18 @@ func generateKey32() [32]byte {
 	return rig
 }
 
+const (
+	alpha = "abcdefghijklmnopqrtstuvwxyz"
+)
+
+func randomString(length int) string {
+	s := ""
+	for i := 0; i < length; i++ {
+		s += string(alpha[rand.Intn(len(alpha))])
+	}
+	return s
+}
+
 func bytesEqual(b1, b2 []byte) bool {
 	if len(b1) != len(b2) {
 		return false
@@ -27,7 +39,10 @@ func bytesEqual(b1, b2 []byte) bool {
 }
 
 func Test_SymmetricEncryption(t *testing.T) {
-	key := generateKey32()
+	key, err := DeriveSymmetricKey(randomString(15))
+	if err != nil {
+		panic(err)
+	}
 	data := generateKey32() // whatever
 	ciphertxt, err := EncryptSymmetric(data[:], key[:])
 	if err != nil {

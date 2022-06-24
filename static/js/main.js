@@ -1,3 +1,7 @@
+
+var encryptedBody;
+var currentBlob;
+
 $(document).ready(function () {
     let path = document.location.toString();
     let viewIdx = path.lastIndexOf("/view");
@@ -20,24 +24,45 @@ $(document).ready(function () {
     let post = decodeURIComponent(arr[1]);
 
     let uri = path.substring(0, viewIdx);
-    console.log("ready\n" + uri)
     $.get(uri, function(data) {
+        currentBlob = data;
         let body = data["body"];
+        let encBody = data["encrypted_body"];
         if(body) {
             // Plaintext share
             if(data["blobs"][0]["type"] === "markdown") {
                 let html = marked.parse(body);
                 $('#output').html(html);
+            } else {
+                $('#output').text(body);
             }
-        } else {
+        } else if(encBody) {
             // Encrypted share
+            let bytes = _base64ToArrayBuffer(encBody);
+            console.log("Decoded bytes: ", bytes)
+            encryptedBody = new Uint8Array(bytes);
+            $('#output').html("<pre>Encrypted bytes</pre>");
         }
-        console.log(body)
         console.log(data)
     })
 
+    initScrypt();
+    initNacl();
+
     $("#decrypt-btn").click(function(e) {
         let pp = $('#passphrase').val();
-        console.log(`Got passphrase ${pp}`);
+        let key = deriveKey(pp);
+        let ptxt = aesDecrypt(encryptedBody, key);
+        console.log("plaintext ",  ptxt);
+
+
+        if(currentBlob["blobs"][0]["type"] === "markdown") {
+            let decryptedText = aesjs.utils.utf8.fromBytes(ptxt);
+            let html = marked.parse(decryptedText);
+            $('#output').html(html);
+        } else {
+            $('#output').text(ptxt);
+        }
+
     })
 });
