@@ -63,6 +63,6 @@ $(document).ready(function () {
         } else {
             $('#output').text(ptxt);
         }
-
+        $('#secrets').hide();
     })
 });

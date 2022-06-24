@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -32,6 +33,47 @@ func NewCubbyClient(host string, port int, userEmail, userPass string) *CubbyCli
 		port:       port,
 		userEmail:  userEmail,
 		userPass:   userPass,
+	}
+}
+
+func (c *CubbyClient) CheckVersions() (bool, error) {
+	versions, err := c.Versions()
+	if err != nil {
+		return true, err
+	}
+	if !types.IsVersionMin(versions) {
+		fmt.Fprintf(os.Stderr, "Version %s is less than the minimum client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
+		return false, nil
+	} else if types.IsVersionLess(versions) {
+		fmt.Fprintf(os.Stderr, "Version %s is behind latest client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
+		return true, nil
+	}
+	return true, nil
+}
+
+func (c *CubbyClient) Versions() (*types.VersionResponse, error) {
+	url := fmt.Sprintf("%s:%d/v1/version", c.host, c.port)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("CouldNotGetVersions")
+	}
+	var versions *types.VersionResponse
+	err = json.Unmarshal(body, &versions)
+	if err != nil {
+		return nil, err
+	} else {
+		return versions, nil
 	}
 }
 

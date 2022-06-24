@@ -34,6 +34,7 @@ var getCmd = &cobra.Command{
 	Long:  `Gets a blob from Cubby by specifying either its ID, path, or a substring of its title.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
+		client.CheckVersions()
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
@@ -262,6 +263,7 @@ var searchCmd = &cobra.Command{
 	Long:  `Searches for a blob from Cubby by specifying a query string.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
+		client.CheckVersions()
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
@@ -305,6 +307,7 @@ var attachmentsCmd = &cobra.Command{
 	Long:  `List, download, and decrypt file attachments to Cubby blobs.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
+		client.CheckVersions()
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())

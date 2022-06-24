@@ -25,6 +25,7 @@ var listCmd = &cobra.Command{
 	Long:  `Lists all blobs in Cubby.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
+		client.CheckVersions()
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())

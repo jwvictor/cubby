@@ -115,6 +115,10 @@ func NewServer(portNum int) *Server {
 		})
 	})
 	router.Route("/v1", func(v1Router chi.Router) {
+
+		// Version route
+		v1Router.Get("/version", server.GetVersion)
+
 		// Authenticated post routes
 		v1Router.Route("/posts", func(postsRouter chi.Router) {
 			postsRouter.Use(jwtauth.Verifier(tokenAuth))
@@ -378,6 +382,11 @@ func (s *Server) ViewPost(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
+}
+
+func (s *Server) GetVersion(w http.ResponseWriter, r *http.Request) {
+	response := types.VersionResponse{ServerVersion: types.ServerVersion, LatestClientVersion: types.ClientVersion, MinClientVersion: types.ClientVersion}
+	json.NewEncoder(w).Encode(response)
 }
 
 func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {

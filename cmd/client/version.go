@@ -2,11 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/jwvictor/cubby/pkg/types"
 	"github.com/spf13/cobra"
-)
-
-const (
-	Version = "0.0.1"
 )
 
 var versionCmd = &cobra.Command{
@@ -14,6 +11,8 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of Cubby",
 	Long:  `Just a version number, like all version numbers.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Cubby client v" + Version)
+		fmt.Printf("Cubby client v%s \n", types.ClientVersion)
+		client := getClient()
+		client.CheckVersions()
 	},
 }

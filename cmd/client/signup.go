@@ -25,6 +25,7 @@ var signupCmd = &cobra.Command{
 	Long:  `Signs up a new email address for a new user account.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
+		client.CheckVersions()
 		disp := viper.GetString(CfgUserDisplayName)
 		if disp == "" {
 			disp = generateDisplayName(viper.GetString(CfgUserEmail))

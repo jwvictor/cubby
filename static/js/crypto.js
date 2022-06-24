@@ -60,8 +60,8 @@ function aesDecrypt(encData, key) {
     console.log("encData: ", encData)
     console.log("key: ", key)
     console.log("iv: ", iv)
-    var aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
-    var decryptedBytes = aesOfb.decrypt(ciphertext);
+    let aesOfb = new aesjs.ModeOfOperation.ofb(key, iv);
+    let decryptedBytes = aesOfb.decrypt(ciphertext);
     return decryptedBytes;
 }
 
