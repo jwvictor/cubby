@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jwvictor/cubby/cmd/client/tuiviewer"
+	"github.com/jwvictor/cubby/pkg/client"
 	"github.com/jwvictor/cubby/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -115,6 +116,15 @@ var rmPublicationCmd = &cobra.Command{
 	},
 }
 
+func resolveUser(userId string, client *client.CubbyClient) (string, error) {
+	userRes, err := client.SearchUser(userId)
+	if err != nil {
+		return "", err
+	} else {
+		return userRes.Id, nil
+	}
+}
+
 var putPublicationCmd = &cobra.Command{
 	Use:   "put",
 	Short: "Publish a blob from Cubby",
@@ -151,9 +161,14 @@ var putPublicationCmd = &cobra.Command{
 					Audience: "",
 				})
 			} else {
+				uid, err := resolveUser(x, client)
+				if err != nil {
+					fmt.Printf("Could not resolve user email or display name: %s\n", x)
+					return
+				}
 				perms = append(perms, types.VisibilitySetting{
 					Type:     types.SingleUser,
-					Audience: x,
+					Audience: uid,
 				})
 			}
 		}

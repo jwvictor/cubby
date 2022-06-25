@@ -60,6 +60,17 @@ func (p *UsersFileStore) _checkDisplayNameUnsafe(name string) bool {
 	return true
 }
 
+func (p *UsersFileStore) GetByEmail(email string) (*User, error) {
+	p.lock.RLock()
+	defer p.lock.RUnlock()
+	for _, user := range p.users {
+		if user.Email == email {
+			return user.ToUser(), nil
+		}
+	}
+	return nil, errors.New("NotFound")
+}
+
 func (p *UsersFileStore) GetByDisplayName(displayName string) (*User, error) {
 	p.lock.RLock()
 	defer p.lock.RUnlock()

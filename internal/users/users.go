@@ -11,4 +11,5 @@ type UserProvider interface {
 	SignUp(userEmail, userPass, displayName string) (*User, error)
 	GetById(id string) (*User, error)
 	GetByDisplayName(name string) (*User, error)
+	GetByEmail(email string) (*User, error)
 }

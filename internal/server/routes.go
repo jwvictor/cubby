@@ -157,6 +157,9 @@ func NewServer(portNum int) *Server {
 		v1Router.Route("/users", func(usersRouter chi.Router) {
 			usersRouter.Post("/signup", server.SignUp)
 			usersRouter.Post("/authenticate", server.Authenticate)
+			usersRouter.Route("/search/{query}", func(searchUserRouter chi.Router) {
+				searchUserRouter.Get("/", server.SearchUser)
+			})
 			usersRouter.Route("/profile", func(profileRouter chi.Router) {
 				profileRouter.Use(jwtauth.Verifier(tokenAuth))
 				profileRouter.Use(jwtauth.Authenticator)
@@ -220,6 +223,36 @@ func (s *Server) SignUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
+		render.Render(w, r, ErrNotFound)
+		return
+	}
+}
+
+func (s *Server) SearchUser(w http.ResponseWriter, r *http.Request) {
+	if query := chi.URLParam(r, "query"); query != "" {
+		log.Printf("Searching for user: %s\n", query)
+		user, err := s.userProvider.GetByEmail(query)
+		if err != nil || user == nil {
+			// Try display name
+			user, err = s.userProvider.GetByDisplayName(query)
+		}
+		if err != nil || user == nil {
+			render.Render(w, r, ErrNotFound)
+			return
+		}
+
+		resp := &types.UserResponse{
+			Id:          user.Id,
+			Email:       user.Email,
+			DisplayName: user.DisplayName,
+		}
+		err = json.NewEncoder(w).Encode(resp)
+		if err != nil {
+			render.Render(w, r, ErrNotFound)
+			return
+		}
+	} else {
+		log.Printf("No user supplied: %s\n", query)
 		render.Render(w, r, ErrNotFound)
 		return
 	}
@@ -500,8 +533,9 @@ func (s *Server) PostCtx(next http.Handler) http.Handler {
 					render.Render(w, r, ErrNotFound)
 					return
 				}
-				hasPerm := post.HasPermission(userId)
+				hasPerm := post.HasPermission(userId) || post.OwnerId == userId
 				if !hasPerm {
+					log.Printf("User not authorized: %s\n%v\n", userId, post)
 					render.Render(w, r, ErrUnauthorized)
 					return
 				}

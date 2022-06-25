@@ -109,6 +109,7 @@ func init() {
 	rootCmd.AddCommand(attachmentsCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(signupCmd)
+	rootCmd.AddCommand(profileCmd)
 	rootCmd.AddCommand(pushCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(searchCmd)
@@ -119,6 +120,8 @@ func init() {
 	publishCmd.AddCommand(putPublicationCmd)
 	publishCmd.AddCommand(rmPublicationCmd)
 	publishCmd.AddCommand(getPublicationCmd)
+
+	profileCmd.AddCommand(profileSearchCmd)
 }
 
 func Execute() {

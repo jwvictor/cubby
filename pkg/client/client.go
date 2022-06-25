@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	url2 "net/url"
 	"os"
 	"time"
 )
@@ -74,6 +75,33 @@ func (c *CubbyClient) Versions() (*types.VersionResponse, error) {
 		return nil, err
 	} else {
 		return versions, nil
+	}
+}
+
+func (c *CubbyClient) SearchUser(emailOrDisplayName string) (*types.UserResponse, error) {
+	url := fmt.Sprintf("%s:%d/v1/users/search/%s", c.host, c.port, url2.QueryEscape(emailOrDisplayName))
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.jwtTokens.AccessToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("CouldNotGetUser")
+	}
+	var user *types.UserResponse
+	err = json.Unmarshal(body, &user)
+	if err != nil {
+		return nil, err
+	} else {
+		return user, nil
 	}
 }
 
