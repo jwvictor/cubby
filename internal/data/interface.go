@@ -196,8 +196,6 @@ func (t *StaticFileProvider) DeleteBlob(blobId, userId string) *types.Blob {
 					t.DeletePost(userId, x.Id)
 				}
 			}
-		} else {
-			t.lock.RUnlock()
 		}
 		return blob
 	} else {
