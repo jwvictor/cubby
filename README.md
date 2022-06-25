@@ -1,14 +1,15 @@
 # Cubby: a personal data storage tool for command-line power users
+
 Cubby is a _secure_ blob storage tool optimized for command-line users that can function as a personal organizer, note-taking tool, time tracker, secret sharing platform, configuration mechanism, or blog publishing system, among many other things.
 
-In Cubby, users can read or write blobs like so:
+At the most basic level, Cubby allows users to read and write blobs like so:
 
 ```
 cubby put "janes phone number" 2125551212 
 cubby get "janes phone number" # opens in $EDITOR by default (vim, emacs, etc.)
 ```
 
-All blobs are encrypted on the client side and only ciphertext is stored on the server.
+These blobs are _securely_ stored on the server without exposing any sensitive data to the server at all -- all data is encrypted (and decrypted) on the client side. Only ciphertext is stored on the server.
 
 ## Installation
 The repository defines two binaries in `cmd`: a client and a server. By default, the client will use the publicly available server at `public.cubbycli.com`, but users can choose to run a private server instead.
@@ -23,7 +24,7 @@ options:
   viewer: editor
   body-only: true
 user:
-  email: jason
+  email: jason@email.com
   password: passwordhere 
 crypto:
   symmetric-key: sometexthere 
