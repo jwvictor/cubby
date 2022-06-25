@@ -22,6 +22,39 @@ var publishCmd = &cobra.Command{
 	Long:  `Publish, manage, and view shared or published blobs.`,
 }
 
+var rmPublicationCmd = &cobra.Command{
+	Use:   "rm",
+	Short: "Delete a post",
+	Long:  `Deletes a posted blob, given the post ID (title) or blob ID.`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		client := getClient()
+		err := client.Authenticate()
+		if err != nil {
+			log.Printf("Error: Authentication - %s\n", err.Error())
+		}
+		for _, postId := range args {
+			uid, err := client.UserProfile()
+			if err != nil {
+				fmt.Printf("Could not get user profile:%s\n", err.Error())
+				return
+			}
+			post, err := client.GetPostById(uid.DisplayName, postId)
+			if err != nil {
+				fmt.Printf("Could not find post by ID: %s (%s)\n", postId, err.Error())
+				return
+			}
+			_, err = client.DeletePost(uid.DisplayName, post.Id)
+			if err != nil {
+				fmt.Printf("Could not delete post by ID: %s (%s)\n", postId, err.Error())
+				return
+			} else {
+				fmt.Printf("Successfully deleted post with ID: %s\n", postId)
+			}
+		}
+	},
+}
+
 var putPublicationCmd = &cobra.Command{
 	Use:   "put",
 	Short: "Publish a blob from Cubby",
@@ -48,6 +81,7 @@ var putPublicationCmd = &cobra.Command{
 		postId := publishPostId
 		if postId == "" {
 			postId = types.SanitizePostId(b.Title)
+			// TODO: check if there's a name collision and, if so, add some extra characters to the ID
 		}
 		var perms []types.VisibilitySetting
 		for _, x := range publishPermissions {

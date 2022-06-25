@@ -105,12 +105,14 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(signupCmd)
 	rootCmd.AddCommand(pushCmd)
+	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(searchCmd)
 	rootCmd.AddCommand(tuiCmd)
 	rootCmd.AddCommand(putCmd)
 
 	rootCmd.AddCommand(publishCmd)
 	publishCmd.AddCommand(putPublicationCmd)
+	publishCmd.AddCommand(rmPublicationCmd)
 }
 
 func Execute() {
