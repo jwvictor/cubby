@@ -182,6 +182,23 @@ func (t *StaticFileProvider) DeleteBlob(blobId, userId string) *types.Blob {
 		for _, child := range blob.ChildIds {
 			t.DeleteBlob(child, userId)
 		}
+		t.lock.RLock()
+		userPostsDat, ok := t.postData[userId]
+		userPosts := map[string]*types.Post{}
+		if ok {
+			// Copy to a separate map to avoid weird race conditions
+			userPosts = copyPostMap(userPostsDat)
+		}
+		t.lock.RUnlock()
+		if ok {
+			for _, x := range userPosts {
+				if x.BlobId == blobId {
+					t.DeletePost(userId, x.Id)
+				}
+			}
+		} else {
+			t.lock.RUnlock()
+		}
 		return blob
 	} else {
 		t.lock.RUnlock()
@@ -435,6 +452,22 @@ func arrayHas(ids []string, id string) bool {
 		}
 	}
 	return false
+}
+
+func copyPostMap(m map[string]*types.Post) map[string]*types.Post {
+	m2 := map[string]*types.Post{}
+	for k, v := range m {
+		m2[k] = v
+	}
+	return m2
+}
+
+func copyBlobMap(m map[string]*types.Blob) map[string]*types.Blob {
+	m2 := map[string]*types.Blob{}
+	for k, v := range m {
+		m2[k] = v
+	}
+	return m2
 }
 
 func (t *StaticFileProvider) _putChild(userId, parentBlobId, childBlobId string) bool {
