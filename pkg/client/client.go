@@ -280,7 +280,7 @@ func (c *CubbyClient) DeletePost(ownerId, id string) (*types.Post, error) {
 	return post.Posts[0], nil
 }
 
-func (c *CubbyClient) GetPostById(ownerId, id string) (*types.Post, error) {
+func (c *CubbyClient) GetPostById(ownerId, id string) (*types.PostResponse, error) {
 	if !c.checkAuthExists() {
 		return nil, errors.New("NotAuthenticated")
 	}
@@ -308,7 +308,7 @@ func (c *CubbyClient) GetPostById(ownerId, id string) (*types.Post, error) {
 	if post.Posts == nil {
 		return nil, errors.New("CouldNotGetPost")
 	}
-	return post.Posts[0], nil
+	return post, nil
 }
 
 func (c *CubbyClient) GetBlobById(id string) (*types.Blob, error) {

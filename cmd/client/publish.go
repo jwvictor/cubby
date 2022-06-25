@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jwvictor/cubby/cmd/client/tuiviewer"
 	"github.com/jwvictor/cubby/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,6 +14,7 @@ import (
 var (
 	publishPublicationId string   = ""
 	publishPostId        string   = ""
+	publishOwnerId       string   = ""
 	publishPermissions   []string = nil
 )
 
@@ -20,6 +22,64 @@ var publishCmd = &cobra.Command{
 	Use:   "publish",
 	Short: "Manage publications and shared blobs",
 	Long:  `Publish, manage, and view shared or published blobs.`,
+}
+
+var getPublicationCmd = &cobra.Command{
+	Use:   "get",
+	Short: "Gets a post",
+	Long:  `Gets a posted blob, given the post ID (title) or blob ID.`,
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		client := getClient()
+		err := client.Authenticate()
+		if err != nil {
+			log.Printf("Error: Authentication - %s\n", err.Error())
+		}
+		postId := args[0]
+		ownerId := publishOwnerId
+		if ownerId == "" {
+			uid, err := client.UserProfile()
+			if err != nil {
+				fmt.Printf("Could not get user profile:%s\n", err.Error())
+				return
+			}
+			ownerId = uid.DisplayName
+		}
+		post, err := client.GetPostById(ownerId, postId)
+		if err != nil {
+			fmt.Printf("Could not find post by ID: %s (%s)\n", postId, err.Error())
+			return
+		}
+		displayPost(post.Body, post.EncryptedBody, post.Posts[0].Id)
+	},
+}
+
+func displayPost(body string, encBody []byte, title string) {
+	if encBody != nil {
+		key := viper.GetString(CfgSymmetricKey)
+		keyBytes, err := types.DeriveSymmetricKey(key)
+		if err != nil {
+			fmt.Printf("Error deriving key: %s\n", err.Error())
+		}
+		plaintxt, err := types.DecryptSymmetric(encBody, keyBytes)
+		if err != nil {
+			fmt.Printf("Error decrypting: %s\n", err.Error())
+		}
+		body += string(plaintxt)
+	}
+
+	userViewer := viper.GetString(CfgViewer)
+	switch userViewer {
+	case CfgViewerTui:
+		tuiviewer.RunViewer(body, title)
+	case CfgViewerEditor:
+		_, err := openInEditor(body, title)
+		if err != nil {
+			fmt.Errorf("Failed to open editor: %s\n", err.Error())
+		}
+	default:
+		fmt.Printf(body)
+	}
 }
 
 var rmPublicationCmd = &cobra.Command{
@@ -44,7 +104,7 @@ var rmPublicationCmd = &cobra.Command{
 				fmt.Printf("Could not find post by ID: %s (%s)\n", postId, err.Error())
 				return
 			}
-			_, err = client.DeletePost(uid.DisplayName, post.Id)
+			_, err = client.DeletePost(uid.DisplayName, post.Posts[0].Id)
 			if err != nil {
 				fmt.Printf("Could not delete post by ID: %s (%s)\n", postId, err.Error())
 				return

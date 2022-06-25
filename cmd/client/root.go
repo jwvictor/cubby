@@ -97,6 +97,11 @@ func init() {
 	putCmd.Flags().StringArrayVarP(&putCmdAttachFilenames, "attachment", "a", nil, "files to attach")
 	putCmd.Flags().DurationVarP(&putCmdTtl, "ttl", "X", time.Duration(0), "optional TTL (0 for no TTL)")
 
+	getPublicationCmd.Flags().StringVarP(&publishOwnerId, "publish.ownerId", "O", "", "Display name of the owner of a shared post (or empty yourself)")
+	putPublicationCmd.Flags().StringVarP(&publishPostId, "publish.postId", "I", "", "ID for the post - can be any alphanumeric string (defaults to title)")
+	putPublicationCmd.Flags().StringVarP(&publishPublicationId, "publish.publicationId", "z", "", "ID for the publication this post post will belong to (optional)")
+	putPublicationCmd.Flags().StringArrayVarP(&publishPermissions, "publish.permissions", "r", nil, "Permissions for the post - can be `public` or a user ID")
+
 	attachmentsCmd.Flags().StringArrayVarP(&attachmentCmdFiles, "files", "F", nil, "files to download")
 
 	rootCmd.AddCommand(versionCmd)
@@ -113,6 +118,7 @@ func init() {
 	rootCmd.AddCommand(publishCmd)
 	publishCmd.AddCommand(putPublicationCmd)
 	publishCmd.AddCommand(rmPublicationCmd)
+	publishCmd.AddCommand(getPublicationCmd)
 }
 
 func Execute() {
