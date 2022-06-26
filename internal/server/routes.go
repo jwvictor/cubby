@@ -618,5 +618,8 @@ func ErrInvalidRequest(err error) render.Renderer {
 
 func (s *Server) Serve() {
 	log.Printf("Serving on %d...\n", s.portNum)
-	http.ListenAndServe(fmt.Sprintf(":%d", s.portNum), s.router)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", s.portNum), s.router)
+	if err != nil {
+		fmt.Printf("HTTP listen error: %s\n", err.Error())
+	}
 }
