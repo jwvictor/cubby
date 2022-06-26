@@ -36,6 +36,7 @@ $(document).ready(function () {
             } else {
                 $('#output').text(body);
             }
+            $('#secrets').hide();
         } else if(encBody) {
             // Encrypted share
             let bytes = _base64ToArrayBuffer(encBody);

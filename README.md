@@ -170,6 +170,19 @@ cubby get posts:helloworld -K share_password
 
 Any changes you make will be automatically reflected at the post URL.
 
+But what if you want to use _no_ encryption at all, so anyone can read your blog post? For
+that, we simply pass `-C none`. This will override the encryption mode to `none`, and no
+encryption will happen at all. For example:
+
+```bash
+cubby put -2 posts -T markdown -C none plaintext_post
+cubby get posts:plaintext_post # edit the post contents
+cubby publish put posts:plaintext_post
+```
+
+Now, when you go to the URL for that post, no encryption password will be required in order
+to view the content.
+
 ## Core Cubby concepts
 
 ### Blobs
