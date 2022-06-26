@@ -39,6 +39,27 @@ add_to_path() {
   fi
 }
 
+install_binary() {
+  mkdir $HOME/.cubby;
+  write_config;
+  mkdir $HOME/.cubby/bin;
+  curl -o $HOME/.cubby/bin/cubby "$1"
+  if [ $? -ne 0 ]; then
+    echo "Failed to download binary.";
+    exit 1;
+  fi
+  add_to_path;
+  chmod +x $HOME/.cubby/bin/cubby;
+  echo "Wrote configuration file, running signup with \"cubby signup\"..."
+  if ! $HOME/.cubby/bin/cubby signup; then
+    echo "Sign up failed. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.";
+    exit 1;
+  else
+    echo "Sign up was successful! Please restart your shell for PATH change to take effect. After that, you're";
+    echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
+  fi
+}
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
        echo "Running Linux installer...";
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -46,25 +67,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
        MACHINE_TYPE=`uname -m`
        if [ ${MACHINE_TYPE} == 'x86_64' ]; then
           # 64-bit stuff here
-          echo "Running MacOS X x64 installer...";
-          mkdir $HOME/.cubby;
-          write_config;
-          mkdir $HOME/.cubby/bin;
-          curl -o $HOME/.cubby/bin/cubby "https://www.cubbycli.com/static/dist/cubby_darwin_amd64"
-          if [ $? -ne 0 ]; then
-            echo "Failed to download binary.";
-            exit 1;
-          fi
-          add_to_path;
-          chmod +x $HOME/.cubby/bin/cubby;
-          echo "Wrote configuration file, running signup with \"cubby signup\"..."
-          $HOME/.cubby/bin/cubby signup;
-          if [ $? -ne 0 ]; then
-            echo "Sign up failed. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.";
-          else
-            echo "Sign up was successful! Please restart your shell for PATH change to take effect. After that, you're";
-            echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
-          fi
+          install_binary "https://www.cubbycli.com/static/dist/cubby_darwin_amd64"
        else
           # 32-bit stuff here
           echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
