@@ -20,10 +20,22 @@ Use Case Examples below for ideas on where to start.
 
 ## Installation
 
+### Quick install
+
+For most flavors of UNIX/Linux and Mac OS X, simply run:
+
+```bash
+curl -o install.sh https://www.cubbycli.com/static/install.sh && bash install.sh && rm install.sh
+```
+
+This will set up a config file in `$HOME/.cubby` and download the Cubby binary to `$HOME/cubby/bin`.
+
+### Long install
+
 The repository defines two binaries in `cmd`: a client and a server. By default, the client will use the publicly
 available server at `public.cubbycli.com`, but users can choose to run a private server instead.
 
-## Creating a config file
+#### Creating a config file
 
 Create a `cubby-client.yaml` file in your `$HOME` directory with contents as follows:
 

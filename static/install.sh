@@ -34,7 +34,7 @@ add_to_path() {
   if grep -q "/.cubby/bin" "$HOME/$rcfile"; then
     echo "Cubby already in zsh path; no need to add path"
   else
-    echo "Adding cubby to zsh path in $rcfile";
+    echo "Adding Cubby to PATH in $rcfile";
     echo 'export PATH=$PATH:$HOME/.cubby/bin' >> $HOME/$rcfile;
   fi
 }
