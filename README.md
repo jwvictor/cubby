@@ -110,7 +110,7 @@ To accomplish this, we'll add some new things to our `cubby put`:
 All together, it looks like this:
 
 ```bash
-cubby put -T markdown -2 posts -K=share_password helloworld
+cubby put -T markdown -2 posts -K share_password helloworld
 ```
 
 In order to see how this created a child blob under the parent `posts`, run:
@@ -126,7 +126,7 @@ Now let's open up our post and edit it to contain some content with (we'll need 
 required passphrase with `-K` when we interact with this blob):
 
 ```bash
-cubby get posts:helloworld -K=share_password
+cubby get posts:helloworld -K share_password
 ```
 
 You've probably noticed that paths are represented in Cubby with a colon (`:`). Anywhere that you're 
@@ -165,7 +165,7 @@ rendered HTML.
 To make changes to your post, simply edit your blob with:
 
 ```bash
-cubby get posts:helloworld
+cubby get posts:helloworld -K share_password
 ```
 
 Any changes you make will be automatically reflected at the post URL.
