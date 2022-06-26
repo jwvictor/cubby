@@ -61,16 +61,26 @@ install_binary() {
 }
 
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-       echo "Running Linux installer...";
+       MACHINE_TYPE=`uname -m`
+       if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+          # 64-bit stuff here
+          echo "Running Linux x64 installer...";
+          install_binary "https://www.cubbycli.com/static/dist/cubby_linux_amd64"
+       else
+          echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
+          exit 1;
+       fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
         # Mac OSX
        MACHINE_TYPE=`uname -m`
        if [ ${MACHINE_TYPE} == 'x86_64' ]; then
           # 64-bit stuff here
+          echo "Running Mac OS X x64 installer...";
           install_binary "https://www.cubbycli.com/static/dist/cubby_darwin_amd64"
        else
-          # 32-bit stuff here
-          echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
+          # echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
+          echo "Running Mac OS X ARM64 installer...";
+          install_binary "https://www.cubbycli.com/static/dist/cubby_darwin_arm64"
          exit 1;
        fi
 elif [[ "$OSTYPE" == "cygwin" ]]; then
