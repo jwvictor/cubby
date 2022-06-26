@@ -124,6 +124,7 @@ func NewServer(portNum int) *Server {
 			postsRouter.Use(jwtauth.Verifier(tokenAuth))
 			postsRouter.Use(jwtauth.Authenticator)
 			postsRouter.Post("/", server.CreatePost)
+			postsRouter.Get("/list", server.ListPosts)
 			postsRouter.Route("/{ownerName}/{postId}", func(postRouter chi.Router) {
 				postRouter.Use(server.PostCtx)
 				postRouter.Get("/", server.GetPost)
@@ -311,6 +312,22 @@ func (s *Server) ListBlobs(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {
 		render.Render(w, r, ErrNotFound)
+		return
+	}
+}
+
+func (s *Server) ListPosts(w http.ResponseWriter, r *http.Request) {
+	_, claims, _ := jwtauth.FromContext(r.Context())
+	userId, _ := claims["user_id"].(string)
+	if userId == "" {
+		render.Render(w, r, ErrNotFound)
+		return
+	}
+	data := s.dataProvider.ListPosts(userId)
+	resp := &types.PostResponse{Posts: data}
+	err := json.NewEncoder(w).Encode(resp)
+	if err != nil {
+		render.Render(w, r, ErrRender(err))
 		return
 	}
 }

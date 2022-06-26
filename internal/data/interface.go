@@ -27,6 +27,7 @@ type CubbyDataProvider interface {
 	PutPost(post *types.Post) error
 	GetPost(ownerId, postId string) *types.Post
 	DeletePost(ownerId, postId string) bool
+	ListPosts(ownerId string) []*types.Post
 }
 
 type StaticFileProvider struct {
@@ -282,6 +283,18 @@ func (t *StaticFileProvider) QueryBlobs(searchString, userId string) []*types.Bl
 		}
 	}
 	return result
+}
+
+func (t *StaticFileProvider) ListPosts(ownerId string) []*types.Post {
+	t.lock.RLock()
+	defer t.lock.RUnlock()
+	var output []*types.Post
+	if userPosts, ok := t.postData[ownerId]; ok {
+		for _, post := range userPosts {
+			output = append(output, post)
+		}
+	}
+	return output
 }
 
 func (t *StaticFileProvider) GetPost(ownerId, postId string) *types.Post {

@@ -308,6 +308,36 @@ func (c *CubbyClient) DeletePost(ownerId, id string) (*types.Post, error) {
 	return post.Posts[0], nil
 }
 
+func (c *CubbyClient) ListPublishedBlobs() ([]*types.Post, error) {
+	if !c.checkAuthExists() {
+		return nil, errors.New("NotAuthenticated")
+	}
+	url := fmt.Sprintf("%s:%d/v1/posts/list", c.host, c.port)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.jwtTokens.AccessToken)
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, errors.New("CouldNotGetPosts")
+	}
+	var post *types.PostResponse
+	err = json.Unmarshal(body, &post)
+	if err != nil {
+		return nil, err
+	}
+	if post.Posts == nil {
+		return nil, errors.New("CouldNotGetPosts")
+	}
+	return post.Posts, nil
+}
+
 func (c *CubbyClient) GetPostById(ownerId, id string) (*types.PostResponse, error) {
 	if !c.checkAuthExists() {
 		return nil, errors.New("NotAuthenticated")

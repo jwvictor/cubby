@@ -120,6 +120,7 @@ func init() {
 	publishCmd.AddCommand(putPublicationCmd)
 	publishCmd.AddCommand(rmPublicationCmd)
 	publishCmd.AddCommand(getPublicationCmd)
+	publishCmd.AddCommand(listPublicationsCmd)
 
 	profileCmd.AddCommand(profileSearchCmd)
 }

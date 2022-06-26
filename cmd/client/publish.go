@@ -35,6 +35,7 @@ var getPublicationCmd = &cobra.Command{
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
+			return
 		}
 		postId := args[0]
 		ownerId := publishOwnerId
@@ -83,6 +84,47 @@ func displayPost(body string, encBody []byte, title string) {
 	}
 }
 
+var listPublicationsCmd = &cobra.Command{
+	Use:   "list",
+	Short: "Lists all published blobs",
+	Long:  `Lists all currently active published blobs.`,
+	Args:  cobra.ExactArgs(0),
+	Run: func(cmd *cobra.Command, args []string) {
+		client := getClient()
+		err := client.Authenticate()
+		if err != nil {
+			log.Printf("Error: Authentication - %s\n", err.Error())
+			return
+		}
+		posts, err := client.ListPublishedBlobs()
+		if err != nil {
+			log.Printf("Error getting published blobs: %s\n", err.Error())
+			return
+		}
+
+		renderPosts(posts)
+
+	},
+}
+
+func renderPermissions(post *types.Post) string {
+	var ps []string
+	for _, x := range post.Visibility {
+		if x.Type == types.Public {
+			ps = append(ps, string(types.Public))
+		} else {
+			ps = append(ps, x.Audience)
+		}
+	}
+	return strings.Join(ps, " ")
+}
+
+func renderPosts(posts []*types.Post) {
+	for _, post := range posts {
+		fmt.Printf("%s - %s [%s] \n", post.Id, post.BlobId, renderPermissions(post))
+	}
+}
+
 var rmPublicationCmd = &cobra.Command{
 	Use:   "rm",
 	Short: "Delete a post",
@@ -93,6 +135,7 @@ var rmPublicationCmd = &cobra.Command{
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
+			return
 		}
 		for _, postId := range args {
 			uid, err := client.UserProfile()
@@ -135,6 +178,7 @@ var putPublicationCmd = &cobra.Command{
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
+			return
 		}
 		blobId := args[0]
 		b, err := client.GetBlobById(blobId)

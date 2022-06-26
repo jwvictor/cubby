@@ -101,7 +101,7 @@ To accomplish this, we'll add some new things to our `cubby put`:
 
 * We'll introduce the type (`-T`) flag. This flag allows you to set a 
   "file type" for the blob. For our blog post, we'll use the type `markdown` so Cubby knows our data
-  can be rendered using a Markdown parser. So next we'll do:
+  can be rendered using a Markdown parser. 
 * We'll introduce the encryption key (`-K`) flag. This flag allows you to use a different encryption key
   from the one configured in your `cubby-client.yaml` file. Here, we're setting the passphrase to
   `share_password`.
@@ -122,7 +122,7 @@ cubby list
 This will list out your blobs, suitably indented to illustrate parent-child relationships. You'll see your
 `helloworld` blob is under `posts`, for example.
 
-Now let's open up our post and edit it to contain some content with (we'll need to pass the 
+Now let's open up our post and edit it to contain some content for our blog post(we'll need to pass the 
 required passphrase with `-K` when we interact with this blob):
 
 ```bash
