@@ -64,8 +64,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, CfgConfigFile, "", "config file (default is $HOME/.cobra.yaml)")
-	rootCmd.PersistentFlags().IntVarP(&portNum, CfgPort, "p", 8080, "example: -p 6969")
-	rootCmd.PersistentFlags().StringVarP(&host, CfgHost, "H", "localhost", "example: api.cubby.com")
+	rootCmd.PersistentFlags().IntVarP(&portNum, CfgPort, "p", 80, "example: -p 6969")
+	rootCmd.PersistentFlags().StringVarP(&host, CfgHost, "H", "http://public.cubbycli.com", "usually http://public.cubbycli.com")
 	rootCmd.PersistentFlags().StringVarP(&userEmail, CfgUserEmail, "e", "me@domain.com", "email associated with user account")
 	rootCmd.PersistentFlags().StringVarP(&userPass, CfgUserPassword, "P", "s3cre7", "password associated with user account")
 	rootCmd.PersistentFlags().StringVarP(&userDisplayName, CfgUserDisplayName, "D", "Your display name", "Display name to associate with shares, etc.")
