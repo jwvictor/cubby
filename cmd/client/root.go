@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -141,10 +142,13 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
+		cubbyDir := filepath.Join(home, ".cubby")
+
 		// Search config in home directory with name ".cobra" (without extension).
 		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-		viper.AddConfigPath(home)
 		viper.AddConfigPath(".")
+		viper.AddConfigPath(home)
+		viper.AddConfigPath(cubbyDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("cubby-client")
 	}
