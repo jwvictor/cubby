@@ -59,6 +59,12 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
           chmod +x $HOME/.cubby/bin/cubby;
           echo "Wrote configuration file, running signup with \"cubby signup\"..."
           $HOME/.cubby/bin/cubby signup;
+          if [ $? -ne 0 ]; then
+            echo "Sign up failed. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.";
+          else
+            echo "Sign up was successful! Please restart your shell for PATH change to take effect. After that, you're";
+            echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
+          fi
        else
           # 32-bit stuff here
           echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
