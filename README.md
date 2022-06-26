@@ -154,8 +154,8 @@ You'll see something like:
 ```
 No permissions provided - defaulting to public...
 Published successfully, getting URL...
-Web: http://localhost:3737/v1/post/jason8081/helloworld/view
-API: http://localhost:3737/v1/post/jason8081/helloworld
+Web: https://public.cubbycli.com:443/v1/post/jason8081/helloworld/view
+API: https://public.cubbycli.com:443/v1/post/jason8081/helloworld
 ```
 
 If you go the URL listed under `Web`, you'll see a page prompting you to enter the encryption passphrase.
