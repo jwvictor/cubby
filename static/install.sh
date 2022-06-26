@@ -56,9 +56,12 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
             exit 1;
           fi
           add_to_path;
+          chmod +x $HOME/.cubby/bin/cubby;
+          echo "Wrote configuration file, running signup with \"cubby signup\"..."
+          $HOME/.cubby/bin/cubby signup;
        else
           # 32-bit stuff here
-          echo "Only x64 is supported currently. Please build from source until an installer is available.";
+          echo "Only x64 is supported with the auto-install script. Please build from source until an installer is available.";
          exit 1;
        fi
 elif [[ "$OSTYPE" == "cygwin" ]]; then

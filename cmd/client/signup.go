@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 )
@@ -81,6 +82,7 @@ var signupCmd = &cobra.Command{
 		}
 		err := client.SignUp(disp)
 		if err != nil {
+			os.Exit(1)
 			fmt.Printf("Failed to sign up with error: %s\n", err.Error())
 		}
 	},
