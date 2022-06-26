@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -e
+
 write_config() {
   read -p "Enter password: " password 
   read -p "Enter an encryption passphrase: " encpass 
   read -p "Enter an email address to associate with your account: " email
   echo "Using email ${email}, password ${password}, encryption passphrase ${encpass}";
-  cat  > $HOME/cubby-client.yaml << EndOfMessage
+  cat  > $HOME/.cubby/cubby-client.yaml << EndOfMessage
 host: https://public.cubbycli.com
 port: 443
 options:
@@ -20,6 +22,23 @@ crypto:
 EndOfMessage
 }
 
+add_to_path() {
+  shell="$SHELL";
+  rcfile=".bashrc"
+  if [[ "$shell" == *"zsh" ]]; then
+    rcfile=".zshrc";
+  fi
+
+  echo "shell is $shell, rcfile is $rcfile"
+
+  if grep -q "/.cubby/bin" "$HOME/$rcfile"; then
+    echo "Cubby already in zsh path; no need to add path"
+  else
+    echo "Adding cubby to zsh path in $rcfile";
+    echo 'export PATH=$PATH:$HOME/.cubby/bin' >> $HOME/$rcfile;
+  fi
+}
+
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
        echo "Running Linux installer...";
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -28,7 +47,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
        if [ ${MACHINE_TYPE} == 'x86_64' ]; then
           # 64-bit stuff here
           echo "Running MacOS X x64 installer...";
+          mkdir $HOME/.cubby;
           write_config;
+          mkdir $HOME/.cubby/bin;
+          curl -o $HOME/.cubby/bin/cubby "https://www.cubbycli.com/static/dist/cubby_darwin_amd64"
+          if [ $? -ne 0 ]; then
+            echo "Failed to download binary.";
+            exit 1;
+          fi
+          add_to_path;
        else
           # 32-bit stuff here
           echo "Only x64 is supported currently. Please build from source until an installer is available.";
