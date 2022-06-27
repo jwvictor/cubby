@@ -37,19 +37,38 @@ func NewCubbyClient(host string, port int, userEmail, userPass string) *CubbyCli
 	}
 }
 
-func (c *CubbyClient) CheckVersions() (bool, error) {
+func (c *CubbyClient) CheckVersions() (bool, string, error) {
 	versions, err := c.Versions()
 	if err != nil {
-		return true, err
+		return true, versions.UpgradeScriptUrl, err
 	}
 	if !types.IsVersionMin(versions) {
 		fmt.Fprintf(os.Stderr, "Version %s is less than the minimum client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
-		return false, nil
+		os.Exit(1)
+		return false, versions.UpgradeScriptUrl, nil
 	} else if types.IsVersionLess(versions) {
 		fmt.Fprintf(os.Stderr, "Version %s is behind latest client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
-		return true, nil
+		return true, versions.UpgradeScriptUrl, nil
 	}
-	return true, nil
+	return true, versions.UpgradeScriptUrl, nil
+}
+
+func (c *CubbyClient) FetchInstallScript(url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("CouldNotGetScript")
+	}
+	return body, nil
 }
 
 func (c *CubbyClient) Versions() (*types.VersionResponse, error) {

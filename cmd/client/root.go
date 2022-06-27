@@ -106,6 +106,7 @@ func init() {
 	attachmentsCmd.Flags().StringArrayVarP(&attachmentCmdFiles, "files", "F", nil, "files to download")
 
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(getCmd)
 	rootCmd.AddCommand(attachmentsCmd)
 	rootCmd.AddCommand(listCmd)
