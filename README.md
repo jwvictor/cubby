@@ -25,7 +25,7 @@ Use Case Examples below for ideas on where to start.
 For most flavors of UNIX/Linux and Mac OS X, simply run:
 
 ```bash
-curl -o install.sh -s -S -L https://www.cubbycli.com/static/install.sh && bash install.sh && rm install.sh
+curl -s -S -L https://www.cubbycli.com/static/install.sh | bash 
 ```
 
 This will set up a config file in `$HOME/.cubby` and download the Cubby binary to `$HOME/cubby/bin`.

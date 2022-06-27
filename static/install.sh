@@ -3,9 +3,9 @@
 set -e
 
 write_config() {
-  read -p "Enter password: " password 
-  read -p "Enter an encryption passphrase: " encpass 
-  read -p "Enter an email address to associate with your account: " email
+  read -p "Enter password: " password </dev/tty
+  read -p "Enter an encryption passphrase: " encpass  </dev/tty
+  read -p "Enter an email address to associate with your account: " email </dev/tty
   echo "Using email ${email}, password ${password}, encryption passphrase ${encpass}";
   cat  > $HOME/.cubby/cubby-client.yaml << EndOfMessage
 host: https://public.cubbycli.com
@@ -57,7 +57,7 @@ install_binary() {
   chmod +x $HOME/.cubby/bin/cubby;
   add_to_path;
   if [[ "$isnew" = "yes" ]]; then
-    read -p "Do you need to register a new user account? (y/n)  " newacct
+    read -p "Do you need to register a new user account? (y/n)  " newacct </dev/tty
     if [[ newacct == "y"* ]]; then
       echo "Registering new account...";
       if ! $HOME/.cubby/bin/cubby signup; then
