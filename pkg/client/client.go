@@ -40,7 +40,7 @@ func NewCubbyClient(host string, port int, userEmail, userPass string) *CubbyCli
 func (c *CubbyClient) CheckVersions() (bool, string, error) {
 	versions, err := c.Versions()
 	if err != nil {
-		return true, versions.UpgradeScriptUrl, err
+		return true, "", err
 	}
 	if !types.IsVersionMin(versions) {
 		fmt.Fprintf(os.Stderr, "Version %s is less than the minimum client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
