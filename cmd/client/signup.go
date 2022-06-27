@@ -82,8 +82,10 @@ var signupCmd = &cobra.Command{
 		}
 		err := client.SignUp(disp)
 		if err != nil {
-			os.Exit(1)
 			fmt.Printf("Failed to sign up with error: %s\n", err.Error())
+			os.Exit(1)
+		} else {
+			fmt.Printf("Signup successful!\n")
 		}
 	},
 }

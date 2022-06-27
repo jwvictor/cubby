@@ -25,7 +25,7 @@ Use Case Examples below for ideas on where to start.
 For most flavors of UNIX/Linux and Mac OS X, simply run:
 
 ```bash
-curl -o install.sh https://www.cubbycli.com/static/install.sh && bash install.sh && rm install.sh
+curl -o install.sh -s -S -L https://www.cubbycli.com/static/install.sh && bash install.sh && rm install.sh
 ```
 
 This will set up a config file in `$HOME/.cubby` and download the Cubby binary to `$HOME/cubby/bin`.
@@ -199,7 +199,38 @@ to view the content.
 
 ### Blobs
 
+The central concept in Cubby is the blob. A Cubby "blobspace" is simply a collection of blobs, where each
+blob can itself have "child" blobs, like files in a directory. A blob has a number of attributes:
+
+1. A title, similar to a filename, which is used to uniquely identify the blob
+2. Some body text, which may be encrypted or plaintext
+3. A type, which specifies the type of content and informs how it is rendered on the web app
+4. Tags, which can be any string, and which allow you to quickly `cubby search` for particular types of blobs
+5. Attached files, which can be unencrypted or encrypted
+6. Expire time, which optionally specifies a "time-to-live", i.e. a time at which the blob is
+   automatically deleted.
+7. A complete version history
+8. Some number of "child" blobs
+
 ### Paths
+
+Paths allow you to address blobs in your blobspace. They are simply colon-separated lists
+of blob titles, from root to leaf.
+
+For example, say we have a blobspace set up so the output of `cubby list` is as follows:
+
+```
+ posts
+  helloworld
+  plaintext_post
+```
+
+To address the `posts` "parent" blob, we would simply use `posts` (e.g. `cubby get posts`). 
+To address one of its children,  however, such as `helloworld`, we would use 
+`posts:helloworld` (e.g. `cubby get posts:helloworld`).
+
+If we add a child below `helloworld` called `hw_child`, we could address it with the
+path `posts:helloworld:hw_child`, i.e. `cubby get posts:helloworld:hw_child`.
 
 ### Shared blobs and publications
 

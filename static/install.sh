@@ -29,8 +29,6 @@ add_to_path() {
     rcfile=".zshrc";
   fi
 
-  echo "shell is $shell, rcfile is $rcfile"
-
   if grep -q "/.cubby/bin" "$HOME/$rcfile"; then
     echo "Cubby already in zsh path; no need to add path"
   else
@@ -40,23 +38,43 @@ add_to_path() {
 }
 
 install_binary() {
-  mkdir $HOME/.cubby;
-  write_config;
-  mkdir $HOME/.cubby/bin;
-  curl -o $HOME/.cubby/bin/cubby "$1"
+  isnew="no"
+  if [[ ! -d $HOME/.cubby ]]; then
+    echo "Making $HOME/.cubby and writing configs..."
+    mkdir $HOME/.cubby;
+    write_config;
+    mkdir $HOME/.cubby/bin;
+    isnew="yes"
+  else
+    echo "Leaving old Cubby configs in tact...";
+  fi
+  echo "Downloading Cubby binary at: $1";
+  curl -o $HOME/.cubby/bin/cubby -s -S -L "$1"
   if [ $? -ne 0 ]; then
     echo "Failed to download binary.";
     exit 1;
   fi
-  add_to_path;
   chmod +x $HOME/.cubby/bin/cubby;
-  echo "Wrote configuration file, running signup with \"cubby signup\"..."
-  if ! $HOME/.cubby/bin/cubby signup; then
-    echo "Sign up failed. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.";
-    exit 1;
+  add_to_path;
+  if [[ "$isnew" = "yes" ]]; then
+    read -p "Do you need to register a new user account? (y/n)  " newacct
+    if [[ newacct == "y"* ]]; then
+      echo "Registering new account...";
+      if ! $HOME/.cubby/bin/cubby signup; then
+        printf "\nDO YOU ALREADY HAVE AN ACCOUNT?";
+        printf "We couldn't register a new account with that email address. Usually that's because one already exists. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.\n";
+        echo "You will get this error if you have already signed up for a Cubby account with this email address. If that's the case, you can ignore this warning and begin using Cubby (you'll need to restart your shell for PATH changes to take effect).";
+        exit 1;
+      else
+        printf "\nSign up was successful! Please restart your shell for PATH change to take effect. After that, you're\n";
+        echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
+      fi
+    else
+      printf "\nOK, your config has been set with the credentials you provided, but we didn't registered them as a new account. You can start using Cubby now!\n";
+      echo "If this was a mistake and you indeed intended to register these credentials as a new account, fear not: a quick \"cubby signup\" will fix that.";
+    fi
   else
-    echo "Sign up was successful! Please restart your shell for PATH change to take effect. After that, you're";
-    echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
+    echo "Your binary has been updated and all configs were left in tact. Happy Cubbyholing!. 😁 ";
   fi
 }
 
