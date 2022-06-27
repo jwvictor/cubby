@@ -28,7 +28,7 @@ For most flavors of UNIX/Linux and Mac OS X, simply run:
 curl -s -S -L https://www.cubbycli.com/static/install.sh | bash 
 ```
 
-This will set up a config file in `$HOME/.cubby` and download the Cubby binary to `$HOME/cubby/bin`.
+This will set up a config file in `$HOME/.cubby` and download the Cubby binary to `$HOME/.cubby/bin`.
 
 ### Long install
 

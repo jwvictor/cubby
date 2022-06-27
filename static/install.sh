@@ -58,7 +58,7 @@ install_binary() {
   add_to_path;
   if [[ "$isnew" = "yes" ]]; then
     read -p "Do you need to register a new user account? (y/n)  " newacct </dev/tty
-    if [[ newacct == "y"* ]]; then
+    if [[ "$newacct" == "y"* ]]; then
       echo "Registering new account...";
       if ! $HOME/.cubby/bin/cubby signup; then
         printf "\nDO YOU ALREADY HAVE AN ACCOUNT?";
