@@ -234,6 +234,37 @@ path `posts:helloworld:hw_child`, i.e. `cubby get posts:helloworld:hw_child`.
 
 ### Shared blobs and publications
 
+Any blob -- encrypted with any key or in plaintext -- can be "published" via Cubby. The details of how
+the shared version of the blob work depend on the configuration of the blob itself. The main two details
+to consider are the _type_ of the blob and its encryption settings.
+
+#### Types for shared blobs
+
+Currently, the only "special" type for shared blobs is Markdown, where we pass `-T markdown` to the `cubby put`
+command, as demonstrated in the walkthrough above. Blobs with type set to `markdown` will be treated like
+"blog posts" -- they will be visible both via API and on the web at a generated URL. On the web, the Markdown 
+will be properly converted into HTML.
+
+#### Encryption settings for shared blobs
+
+If a blob is encrypted, the users attempting to access it -- whether by web, CLI, or API -- will need to have
+the proper symmetric key passphrase in order to decrypt its contents. Typically, users don't want to give out
+their personal encryption key, so there are two things we can do instead:
+
+1. Pass `-C none` on the `cubby put`, which disables encryption completely. When this blob is published,
+   it will be a fully public post that anyone with the URL can view.
+2. Pass `-K <key>` with a special key only for this share. When this blob is published, users will only
+   be able to view it with that key. You can communicate this offline to the intended audience, and
+   this way the shared data is never exposed to the server or to the public.
+
+### Configs
+
+Virtually all configs -- every one except the title/data fields for `cubby put` -- are controlled by both Cobra
+and Viper. This means you can set your defaults in `cubby-client.yaml` and override them as needed with
+command line flags. Running `cubby help` will show you a full list of both the config file key and
+command line switch versions for each variable. (Note that, for config file keys, the period `.` denotes
+keys that are nested in the YAML file, e.g. `crypto.mode`, where `mode` is under the block `crypto`.)
+
 ## Cubby subcommands
 
 ### `put`
