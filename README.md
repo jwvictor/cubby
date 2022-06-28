@@ -1,4 +1,86 @@
-# Cubby: a personal data storage tool for command-line users
+# Cubby: personal data management for command-line users
+
+## A note from the author
+
+Cubby was written, first and foremost, to solve my personal needs. The default Cubby server now
+publicly available at `public.cubbycli.com` was previously for personal use only. But as I've
+used Cubby more and more, I've come to think that it's worth sharing with the world in hopes that you
+all find it useful as well.
+
+I wanted a way to interact with my personal data that was fast, efficient, and centered around 
+a command-line interface. To be clear, I don't mean a CLI _utility_, a companion to some larger app
+or service, but rather an experience designed from the ground up for the command-line. With Cubby, all
+my personal data is just a few keystrokes away; my default editor is the highly-powered `vim`, which
+lets me edit my stuff -- again -- _efficiently_. With the help of macros and buffers and yanks.
+
+Likewise, important files, such as cryptographic keys and identity files, are immediately available
+at every computer I have. Simply running `cubby get <whatever>` pulls down these critical pieces
+of data that I need to copy to every computer, cloud server, and container I run.
+
+Aside from being an extremely fast an efficient way to work with personal data, Cubby is useful for
+managing _personal_ notes in which you may sometimes mention matters from work. For example, you remember
+something to do for a client at work, and you want to write "get back to client X" on your to-do
+list. Exposing that information to the eyes of whatever service provider you're using _could_ violate
+your company's security policies.
+
+So, Cubby encrypts your data _at the source_ and only sends ciphertext up to the server. When you
+want to view the data, Cubby pulls down the ciphertext and uses a decryption key you provide to
+decrypt the data locally. As such, the name of "client X" was never exposed to Cubby's servers,
+keeping you safe if you need to mention confidential information.
+
+The other problem of mine that Cubby solves is sharing. Sharing covers everything from sharing a
+password or cryptographic key with a single coworker to publishing a blog post to the entire world.
+
+I've often felt that the mere inertia of blogging and the pressure to compile a suitable "blog"
+to host my _oeuvres_ often discouraged me from publishing my thoughts to the world. With Cubby,
+any Markdown blob you store can be swiftly published with `cubby publish put <blob name>`. A
+unique URL is generated that you can share with the world, where readers can view your
+(now-rendered) Markdown post in all its glory.
+
+And the same applies for sharing secrets with other people. You can set a custom encryption
+key for a blob containing a password with `-K` and share it with your coworker using 
+`cubby publish put -r <user email>`.  As long as your coworker has a Cubby account and 
+you tell them the encryption passphrase you used (if any), they will be able to pull down 
+the ciphertext and decrypt it.
+
+This base set of features lets me build all sorts of interesting little tools and workflows
+that make my job easier. It allows me to keep myself organized and provides me with a
+"cloud filesystem" of sorts that I can tightly integrate into existing scripts and 
+workflows -- and one that, importantly, allows me to use the tools with which I'm most
+efficient.
+
+## Preamble
+
+Your average (technically proficient) user of the command-line -- for all the tools and skills they have
+access to -- no doubt has numerous text files scattered around their filesystem containing important
+bits of information. Things like:
+
+1. To-do lists
+2. Passwords and other user credentials
+3. Notes
+4. Cryptographic keys
+5. Settings, like terminal settings in `.bashrc` or SSH key settings in `.ssh`
+
+Many of these are scattered around in random text files and documents.
+
+Worse yet, others -- like your favorite configs and keys -- need to be arduously copied among computers in a 
+vain attempt to tame chaos and keep your config files in sync.
+
+Notes and to-do lists become siloed between "work computer" and "personal computer," and one must take care
+to always be at the right computer when having thoughts or questions about a particular domain.
+
+Alas, Cubby is here to fix all these problems. It was designed specifically for the highly technical, 
+CLI-loving programmer type. In Cubby, viewing your to-do list takes some 10 keystrokes, whereas viewing a
+to-do list on Notion would take some 5 clicks and _then_ 10 keystrokes!
+
+Add that up and you're losing years of your life to clunky tools designed for people who don't know how to 
+use `vim` (and refuse to learn).
+
+All that to say -- try Cubby now. There's a super quick and easy install script that sets up your configs,
+downloads the binary, and makes an account if necessary. Five minutes to learn Cubby now may save you
+years of productivity yet.
+
+## What is Cubby?
 
 Cubby is a _secure_ blob storage tool optimized for command-line users that can function as a personal organizer,
 note-taking tool, time tracker, secret sharing platform, configuration mechanism, or blog publishing system, among many
@@ -63,8 +145,8 @@ You should see a success message and you're ready to go.
 
 ## Walkthrough
 
-Before doing the walkthrough, be sure to make your config file and run `cubby signup` as explained in the 
-Installation section above.
+Before doing the walkthrough, be sure to install Cubby via the instructions in the "Installation" section
+above. (For most users, this simply involves running the install script.)
 
 The first time you start up Cubby, you won't have any blobs. Let's start by making a first blob -- a to-do list.
 Start by running:
@@ -134,7 +216,7 @@ cubby list
 This will list out your blobs, suitably indented to illustrate parent-child relationships. You'll see your
 `helloworld` blob is under `posts`, for example.
 
-Now let's open up our post and edit it to contain some content for our blog post(we'll need to pass the 
+Now let's open up our post and edit it to contain some content for our blog post (we'll need to pass the 
 required passphrase with `-K` when we interact with this blob):
 
 ```bash
@@ -145,8 +227,8 @@ You've probably noticed that paths are represented in Cubby with a colon (`:`). 
 expected to pass a blob ID of some kind, you can pass a colon-separated path like this instead, and
 it will be automatically resolved to the proper blob ID.
 
-Let's fill out the post with some Markdown like the following so we have interesting content to
-look at for the rest of the tutorial:
+Let's use `cubby get ` again to fill out the post with some Markdown like the following so we have 
+interesting content to look at for the rest of the tutorial:
 
 ```markdown
 # Hello, world!
@@ -183,8 +265,8 @@ cubby get posts:helloworld -K share_password
 Any changes you make will be automatically reflected at the post URL.
 
 But what if you want to use _no_ encryption at all, so anyone can read your blog post? For
-that, we simply pass `-C none`. This will override the encryption mode to `none`, and no
-encryption will happen at all. For example:
+that, we simply pass `-C none` to our `cubby put` (instead of `-K <key>`. This will override 
+the encryption mode to `none`, and no encryption will happen at all. For example:
 
 ```bash
 cubby put -2 posts -T markdown -C none plaintext_post
@@ -208,7 +290,7 @@ blob can itself have "child" blobs, like files in a directory. A blob has a numb
 4. Tags, which can be any string, and which allow you to quickly `cubby search` for particular types of blobs
 5. Attached files, which can be unencrypted or encrypted
 6. Expire time, which optionally specifies a "time-to-live", i.e. a time at which the blob is
-   automatically deleted.
+   automatically deleted
 7. A complete version history
 8. Some number of "child" blobs
 
