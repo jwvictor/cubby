@@ -142,13 +142,13 @@ func (t *StaticFileProvider) _getPathUnsafe(path string, userId string, data map
 		if cur == nil {
 			next := findBlobByTitleMapUnsafe(data, seg, false)
 			if next == nil {
-				break
+				return nil
 			}
 			cur = t.resolveChildren(next)
 		} else {
 			next := findBlobByTitleSliceUnsafe(cur.Children, seg)
 			if next == nil {
-				break
+				return nil
 			}
 			cur = t.resolveChildren(next)
 		}
