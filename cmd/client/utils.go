@@ -22,7 +22,7 @@ func extractTags(comment string) []string {
 
 	// Strip #s
 	for i, tag := range tags {
-		tags[i] = strings.TrimLeft(tag, "#")
+		tags[i] = strings.ToLower(strings.TrimLeft(tag, "#"))
 	}
 
 	return tags
