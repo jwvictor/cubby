@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/jwvictor/cubby/pkg/client"
 	"github.com/jwvictor/cubby/pkg/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,6 +41,7 @@ var putCmd = &cobra.Command{
 			tags = strings.Split(putCmdTags, " ")
 		}
 		var parentBlobId string
+
 		if putCmdParentPath != "" {
 			parentBlob, err := client.GetBlobById(putCmdParentPath)
 			if err != nil {
@@ -69,6 +71,15 @@ var putCmd = &cobra.Command{
 			fmt.Printf("Please use either command-line flags or arguments, but not both. Examples:\n\tcubby put -t title -d data\n\tcubby put title data\n")
 			return
 		}
+
+		if parentBlobId == "" {
+			if isPc, parentId, blobTitle := checkIfIsParentChild(putCmdTitle, client); isPc {
+				fmt.Printf("Prefix resolved to blob: making blob `%s` a child of blob with ID %s.\n", blobTitle, parentId)
+				parentBlobId = parentId
+				putCmdTitle = blobTitle
+			}
+		}
+
 		if putCmdData == "" {
 			// Then try using args
 			putCmdData = strings.Join(args, " ")
@@ -139,6 +150,23 @@ var putCmd = &cobra.Command{
 			log.Printf("Done (%s).\n", id)
 		}
 	},
+}
+
+func checkIfIsParentChild(id string, client *client.CubbyClient) (bool, string, string) {
+	idx := strings.LastIndex(id, ":")
+	if idx < 0 {
+		return false, "", ""
+	}
+
+	blob, err := client.GetBlobById(id[:idx])
+	if err == nil && blob != nil {
+		// parent path does exist
+		return true, blob.Id, id[idx+1:]
+	} else {
+		// parent path does not exist
+		return false, "", ""
+	}
+
 }
 
 func putOrUpdateAttachment(blob *types.Blob, filename string) error {
