@@ -107,6 +107,18 @@ func NewStaticFileProvider(context context.Context, outputFilename string) Cubby
 }
 
 func findBlobByTitleSliceUnsafe(data []*types.Blob, title string) *types.Blob {
+
+	// First look for exact match
+	for _, v := range data {
+		if v.Deleted {
+			continue
+		}
+		if v.Title == title {
+			return v
+		}
+	}
+
+	// Then look for near match
 	for _, v := range data {
 		if v.Deleted {
 			continue
@@ -119,6 +131,23 @@ func findBlobByTitleSliceUnsafe(data []*types.Blob, title string) *types.Blob {
 }
 
 func findBlobByTitleMapUnsafe(data map[string]*types.Blob, title string, searchChildren bool) *types.Blob {
+
+	// First look for perfect match
+	for _, v := range data {
+		if v.Deleted {
+			continue
+		}
+		if !searchChildren {
+			if v.ParentId != "" {
+				continue
+			}
+		}
+		if v.Title == title {
+			return v
+		}
+	}
+
+	// Then for a near match
 	for _, v := range data {
 		if v.Deleted {
 			continue
