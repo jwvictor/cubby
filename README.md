@@ -1,5 +1,7 @@
 # Cubby: personal data management for command-line users
 
+First, a brief Haiku on the Zen of Cubby:
+
 ```bash
 cubby put ideas 
 cubby get ideas
