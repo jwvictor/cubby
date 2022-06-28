@@ -1,5 +1,11 @@
 # Cubby: personal data management for command-line users
 
+```bash
+cubby put ideas 
+cubby get ideas
+cubby publish put ideas
+```
+
 ## A note from the author
 
 Cubby was written, first and foremost, to solve my personal needs. The default Cubby server now
