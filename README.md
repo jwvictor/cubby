@@ -393,7 +393,12 @@ e.g. `notes:client meeting`.
 
 Usage: `cubby get <key>`
 
-Example: `cubby get myemail`
+Example: `cubby get todo`
+
+Optional parameters include:
+
+- `-V`: override configured viewer (one of `editor`, `stdout`, or `viewer`) -- `stdout` is often used when calling Cubby from a script 
+- `-b`: when using stdout, shows body only (default: true)
 
 ### `list`
 
