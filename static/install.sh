@@ -3,9 +3,19 @@
 set -e
 
 write_config() {
-  read -p "Enter password: " password </dev/tty
-  read -p "Enter an encryption passphrase: " encpass  </dev/tty
-  read -p "Enter an email address to associate with your account: " email </dev/tty
+  password=""
+  encpass=""
+  email=""
+  if [[ "$1" == "y"* ]]; then
+    # Need to register a new account
+    read -p "Enter an email address to associate with your new account: " email </dev/tty
+    read -p "Enter a password for your new account: " password </dev/tty
+    read -p "Enter an encryption passphrase to use (can be any series of characters you choose): " encpass  </dev/tty
+  else
+    read -p "Enter the email address associated with your existing account: " email </dev/tty
+    read -p "Enter the password for your existing account: " password </dev/tty
+    read -p "Enter the encryption passphrase to use (typically the same passphrase as your other Cubby installations): " encpass  </dev/tty
+  fi
   echo "Using email ${email}, password ${password}, encryption passphrase ${encpass}";
   cat  > $HOME/.cubby/cubby-client.yaml << EndOfMessage
 host: https://public.cubbycli.com
@@ -39,16 +49,19 @@ add_to_path() {
 
 install_binary() {
   isnew="no"
+  newacct="no"
   if [[ ! -d $HOME/.cubby ]]; then
     echo "Making $HOME/.cubby and writing configs..."
     mkdir $HOME/.cubby;
-    write_config;
+    read -p "Do you need to register a new user account? (y/n)  " newacct </dev/tty
+    write_config "$newacct";
     mkdir $HOME/.cubby/bin;
     isnew="yes"
+
   else
-    echo "Leaving old Cubby configs in tact...";
+    echo "Leaving old Cubby configs in tact; will upgrade binary only.";
   fi
-  echo "Downloading Cubby binary at: $1";
+  echo "Downloading latest Cubby binary at: $1";
   curl -o $HOME/.cubby/bin/cubby -s -S -L "$1"
   if [ $? -ne 0 ]; then
     echo "Failed to download binary.";
@@ -57,24 +70,23 @@ install_binary() {
   chmod +x $HOME/.cubby/bin/cubby;
   add_to_path;
   if [[ "$isnew" = "yes" ]]; then
-    read -p "Do you need to register a new user account? (y/n)  " newacct </dev/tty
     if [[ "$newacct" == "y"* ]]; then
       echo "Registering new account...";
       if ! $HOME/.cubby/bin/cubby signup; then
-        printf "\nDO YOU ALREADY HAVE AN ACCOUNT?";
-        printf "We couldn't register a new account with that email address. Usually that's because one already exists. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.\n";
+        printf "\nDO YOU ALREADY HAVE AN ACCOUNT?\n";
+        printf "We couldn't register a new account with that email address. Usually that's because one already exists. Please check your ~/.cubby/cubby-client.yaml file for accuracy and run \"cubby signup\" to try again.\n\n";
         echo "You will get this error if you have already signed up for a Cubby account with this email address. If that's the case, you can ignore this warning and begin using Cubby (you'll need to restart your shell for PATH changes to take effect).";
         exit 1;
       else
-        printf "\nSign up was successful! Please restart your shell for PATH change to take effect. After that, you're\n";
-        echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. 😁";
+        printf "\nPlease restart your shell for PATH change to take effect. After that, you're\n";
+        echo "ready to start using Cubby! Please see our README on Github for ideas of where to start. Happy Cubbyholing! 😁";
       fi
     else
-      printf "\nOK, your config has been set with the credentials you provided, but we didn't registered them as a new account. You can start using Cubby now!\n";
-      echo "If this was a mistake and you indeed intended to register these credentials as a new account, fear not: a quick \"cubby signup\" will fix that.";
+      printf "\nOK, your config has been set with the credentials you provided, but we didn't register them as a new account. You can start using Cubby now!\n";
+      echo "If this was a mistake and you indeed intended to register these credentials as a new account, fear not: a quick \"cubby signup\" will fix that. Happy Cubbyholing! 😁";
     fi
   else
-    echo "Your binary has been updated and all configs were left in tact. Happy Cubbyholing!. 😁 ";
+    echo "Your binary has been updated and all configs were left in tact. Happy Cubbyholing! 😁 ";
   fi
 }
 
