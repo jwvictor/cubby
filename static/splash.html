@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/vendor/semantic/semantic.min.css">
+    <script src="/static/vendor/nacl_factory.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/static/vendor/semantic/semantic.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+    <script src="/static/js/crypto.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script src="/static/vendor/scrypt.js"></script>
+
+    <!-- for highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js"></script>
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/markdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/languages/python.min.js"></script>
+    <title>Cubby: the awesome personal storage tool for CLI users</title>
+
+    <style type="text/css">
+
+        .hidden.menu {
+            display: none;
+        }
+
+        .masthead.segment {
+            min-height: 700px;
+            padding: 1em 0em;
+        }
+        .masthead .logo.item img {
+            margin-right: 1em;
+        }
+        .masthead .ui.menu .ui.button {
+            margin-left: 0.5em;
+        }
+        .masthead h1.ui.header {
+            margin-top: 3em;
+            margin-bottom: 0em;
+            font-size: 4em;
+            font-weight: normal;
+        }
+        .masthead h2 {
+            font-size: 1.7em;
+            font-weight: normal;
+        }
+
+        .ui.vertical.stripe {
+            padding: 8em 0em;
+        }
+        .ui.vertical.stripe h3 {
+            font-size: 2em;
+        }
+        .ui.vertical.stripe .button + h3,
+        .ui.vertical.stripe p + h3 {
+            margin-top: 3em;
+        }
+        .ui.vertical.stripe .floated.image {
+            clear: both;
+        }
+        .ui.vertical.stripe p {
+            font-size: 1.33em;
+        }
+        .ui.vertical.stripe .horizontal.divider {
+            margin: 3em 0em;
+        }
+
+        .quote.stripe.segment {
+            padding: 0em;
+        }
+        .quote.stripe.segment .grid .column {
+            padding-top: 5em;
+            padding-bottom: 5em;
+        }
+
+        .footer.segment {
+            padding: 5em 0em;
+        }
+
+        .secondary.pointing.menu .toc.item {
+            display: none;
+        }
+
+        @media only screen and (max-width: 700px) {
+            .ui.fixed.menu {
+                display: none !important;
+            }
+            .secondary.pointing.menu .item,
+            .secondary.pointing.menu .menu {
+                display: none;
+            }
+            .secondary.pointing.menu .toc.item {
+                display: block;
+            }
+            .masthead.segment {
+                min-height: 350px;
+            }
+            .masthead h1.ui.header {
+                font-size: 2em;
+                margin-top: 1.5em;
+            }
+            .masthead h2 {
+                margin-top: 0.5em;
+                font-size: 1.5em;
+            }
+        }
+
+
+    </style>
+
+    <script>
+        function goToInstall() {
+            document.location = "https://github.com/jwvictor/cubby#quick-install";
+        }
+    </script>
+    <script>
+        $(document)
+            .ready(function() {
+
+                // fix menu when passed
+                $('.masthead')
+                    .visibility({
+                        once: false,
+                        onBottomPassed: function() {
+                            $('.fixed.menu').transition('fade in');
+                        },
+                        onBottomPassedReverse: function() {
+                            $('.fixed.menu').transition('fade out');
+                        }
+                    })
+                ;
+
+                // create sidebar and attach to menu open
+                $('.ui.sidebar')
+                    .sidebar('attach events', '.toc.item')
+                ;
+
+                hljs.highlightAll();
+            })
+        ;
+    </script>
+
+</head>
+<body>
+
+
+
+
+
+
+
+<!-- UNCOMMENT FOR LOGIN/SIGNUP BUTTONS -->
+
+<!--<div class="ui large top fixed hidden menu">-->
+<!--    <div class="ui container">-->
+<!--        <a class="active item">Home</a>-->
+<!--        <a class="item">Work</a>-->
+<!--        <a class="item">Company</a>-->
+<!--        <a class="item">Careers</a>-->
+<!--        <div class="right menu">-->
+<!--            <div class="item">-->
+<!--                <a class="ui button">Log in</a>-->
+<!--            </div>-->
+<!--            <div class="item">-->
+<!--                <a class="ui primary button">Sign Up</a>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!-- Sidebar Menu -->
+<div class="ui vertical inverted sidebar menu">
+    <a class="active item" href="/">Home</a>
+    <a class="item" href="https://github.com/jwvictor/cubby">Github</a>
+    <a class="item" href="https://github.com/jwvictor/cubby#quick-install">Quick install</a>
+</div>
+
+
+<!-- Page Contents -->
+<div class="pusher">
+    <div class="ui inverted vertical masthead center aligned segment">
+
+        <div class="ui container">
+            <div class="ui large secondary inverted pointing menu">
+                <a class="toc item">
+                    <i class="sidebar icon"></i>
+                </a>
+
+              <!-- uncomment for signup / log in buttons -->
+<!--                <a class="active item">Home</a>-->
+<!--                <a class="item">Work</a>-->
+<!--                <a class="item">Company</a>-->
+<!--                <a class="item">Careers</a>-->
+<!--                <div class="right item">-->
+<!--                    <a class="ui inverted button">Log in</a>-->
+<!--                    <a class="ui inverted button">Sign Up</a>-->
+<!--                </div>-->
+
+                <a class="active item" href="/">Home</a>
+                <a class="item" href="https://github.com/jwvictor/cubby">Github</a>
+                <a class="item" href="https://github.com/jwvictor/cubby#quick-install">Quick install</a>
+            </div>
+        </div>
+
+        <div class="ui text container">
+            <h1 class="ui inverted header">
+                Bash like a <b>boss</b>.
+            </h1>
+            <h2>The command-liner's tool of choice for to-do lists, blogging, secrets, configs, and much more.</h2>
+            <div class="ui huge primary button" onclick="goToInstall();">Get Started <i class="right arrow icon"></i></div>
+        </div>
+
+    </div>
+
+    <div class="ui vertical stripe segment">
+        <div class="ui middle aligned stackable grid container">
+            <div class="row">
+                <div class="six wide column">
+                    <h3 class="ui header">From your fellow command-liners</h3>
+                    <p>Cubby is an open-source (BSD License) tool for command-line users that provides a free
+                        "virtual cloud filesystem," which is easily accessible from any laptop, container, or cloud
+                        server you might use. Cubby can be used for anything from manging personal data to secret sharing
+                        to blogging.</p>
+                    <p>Cubby is end-to-end encrypted; all data you put into it will be encrypted at the source (i.e.
+                        on your computer) before being sent to the server (and likewise for decryption). This makes
+                        it uniquely suitable for storing passwords, cryptographic keys, identity files, and so on.</p>
+                    <p>Last but not least: your personal Cubby storage space is free and always will be. (The current
+                       limit is 100MB per user identity.)</p>
+                </div>
+                <div class="eight wide right floated column">
+                    <pre>
+                        <code class="language-bash">
+cubby put notes # Creates "notes" blob (encrypted end-to-end)
+cubby get notes # Opens "notes" blob for editing in vim
+
+cubby put blogpost -C none # Creates unencrypted blog post
+cubby get blogpost # Edit the blog post in vim
+cubby publish put blogpost # Get public URL for blog post
+
+cubby put notes:personal "#personal" # Make a child blob
+cubby search personal # Find blogs with tag #personal
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <div class="row">
+                <div class="center aligned column">
+                    <a class="ui huge button" onclick="goToInstall();">Check it out!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- uncomment for extra content blocks -->
+<!--    <div class="ui vertical stripe quote segment">-->
+<!--        <div class="ui equal width stackable internally celled grid">-->
+<!--            <div class="center aligned row">-->
+<!--                <div class="column">-->
+<!--                    <h3>"What a Company"</h3>-->
+<!--                    <p>That is what they all say about us</p>-->
+<!--                </div>-->
+<!--                <div class="column">-->
+<!--                    <h3>"I shouldn't have gone with their competitor."</h3>-->
+<!--                    <p>-->
+<!--                        <img src="assets/images/avatar/nan.jpg" class="ui avatar image"> <b>Nan</b> Chief Fun Officer Acme Toys-->
+<!--                    </p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    <div class="ui vertical stripe segment">-->
+<!--        <div class="ui text container">-->
+<!--            <h3 class="ui header">Breaking The Grid, Grabs Your Attention</h3>-->
+<!--            <p>Instead of focusing on content creation and hard work, we have learned how to master the art of doing nothing by providing massive amounts of whitespace and generic content that can seem massive, monolithic and worth your attention.</p>-->
+<!--            <a class="ui large button">Read More</a>-->
+<!--            <h4 class="ui horizontal header divider">-->
+<!--                <a href="#">Case Studies</a>-->
+<!--            </h4>-->
+<!--            <h3 class="ui header">Did We Tell You About Our Bananas?</h3>-->
+<!--            <p>Yes I know you probably disregarded the earlier boasts as non-sequitur filler content, but its really true. It took years of gene splicing and combinatory DNA research, but our bananas can really dance.</p>-->
+<!--            <a class="ui large button">I'm Still Quite Interested</a>-->
+<!--        </div>-->
+<!--    </div>-->
+
+
+    <div class="ui inverted vertical footer segment">
+        <div class="ui container">
+            <!-- uncomment for footer site map and stuff -->
+<!--            <div class="ui stackable inverted divided equal height stackable grid">-->
+<!--                <div class="three wide column">-->
+<!--                    <h4 class="ui inverted header">About</h4>-->
+<!--                    <div class="ui inverted link list">-->
+<!--                        <a href="#" class="item">Sitemap</a>-->
+<!--                        <a href="#" class="item">Contact Us</a>-->
+<!--                        <a href="#" class="item">Religious Ceremonies</a>-->
+<!--                        <a href="#" class="item">Gazebo Plans</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="three wide column">-->
+<!--                    <h4 class="ui inverted header">Services</h4>-->
+<!--                    <div class="ui inverted link list">-->
+<!--                        <a href="#" class="item">Banana Pre-Order</a>-->
+<!--                        <a href="#" class="item">DNA FAQ</a>-->
+<!--                        <a href="#" class="item">How To Access</a>-->
+<!--                        <a href="#" class="item">Favorite X-Men</a>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <div class="seven wide column">
+                    <h4 class="ui inverted header">&copy; 2022 Jason Victor</h4>
+                    <p>Everything on this page is licensed under the BSD License v3.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+</body>
+</html>

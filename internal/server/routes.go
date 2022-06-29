@@ -30,7 +30,8 @@ type Server struct {
 }
 
 type staticData struct {
-	shareHtml []byte
+	shareHtml  []byte
+	splashHtml []byte
 }
 
 type ErrResponse struct {
@@ -90,6 +91,10 @@ func NewServer(portNum int) *Server {
 	if err != nil {
 		panic(err)
 	}
+	splashHtml, err := ioutil.ReadFile("./static/splash.html")
+	if err != nil {
+		panic(err)
+	}
 
 	server := &Server{
 		portNum:      portNum,
@@ -97,8 +102,9 @@ func NewServer(portNum int) *Server {
 		dataProvider: data.NewStaticFileProvider(context.Background(), "./data"),
 		jwtAuth:      tokenAuth,
 		userProvider: usersStore,
-		staticData:   staticData{shareHtml: shareHtml},
+		staticData:   staticData{shareHtml: shareHtml, splashHtml: splashHtml},
 	}
+	router.Get("/", server.SplashPage)
 	router.Route("/static", func(staticRouter chi.Router) {
 		staticRouter.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			fname := "./static/" + strings.TrimPrefix(r.URL.Path, "/static/")
@@ -414,6 +420,14 @@ func (s *Server) DeletePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := render.Render(w, r, &types.PostResponse{Posts: []*types.Post{post}}); err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
+	}
+}
+
+func (s *Server) SplashPage(w http.ResponseWriter, r *http.Request) {
+	_, err := w.Write([]byte(s.staticData.splashHtml))
+	if err != nil {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
