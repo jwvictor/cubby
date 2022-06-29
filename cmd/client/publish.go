@@ -52,11 +52,16 @@ var getPublicationCmd = &cobra.Command{
 			fmt.Printf("Could not find post by ID: %s (%s)\n", postId, err.Error())
 			return
 		}
-		displayPost(post.Body, post.EncryptedBody, post.Posts[0].Id)
+		cTyp := types.ResolveContentType(post.Blobs[0].Type)
+		fileext := ""
+		if cTyp != nil {
+			fileext = cTyp.FileExtension
+		}
+		displayPost(post.Body, post.EncryptedBody, post.Posts[0].Id, fileext)
 	},
 }
 
-func displayPost(body string, encBody []byte, title string) {
+func displayPost(body string, encBody []byte, title, fileExt string) {
 	if encBody != nil {
 		key := viper.GetString(CfgSymmetricKey)
 		keyBytes, err := types.DeriveSymmetricKey(key)
@@ -75,7 +80,7 @@ func displayPost(body string, encBody []byte, title string) {
 	case CfgViewerTui:
 		tuiviewer.RunViewer(body, title)
 	case CfgViewerEditor:
-		_, err := openInEditor(body, title)
+		_, err := openInEditor(body, title, fileExt)
 		if err != nil {
 			fmt.Errorf("Failed to open editor: %s\n", err.Error())
 		}

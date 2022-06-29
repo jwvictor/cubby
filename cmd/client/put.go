@@ -95,6 +95,16 @@ var putCmd = &cobra.Command{
 			fmt.Errorf("Cannot put an empty blob.\n")
 			return
 		}
+
+		if putCmdType != "" {
+			contentType := types.ResolveContentType(putCmdType)
+			if contentType == nil {
+				fmt.Printf("Unknown content type: %s\n", putCmdType)
+			} else {
+				putCmdType = contentType.LongName
+			}
+		}
+
 		blob := &types.Blob{
 			Title:      putCmdTitle,
 			ParentId:   parentBlobId,

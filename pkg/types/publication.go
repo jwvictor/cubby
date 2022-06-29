@@ -34,7 +34,7 @@ func SanitizePostId(title string) string {
 	for _, r := range title {
 		if r == ' ' {
 			postId += "-"
-		} else if unicode.IsLetter(r) || unicode.IsNumber(r) {
+		} else if unicode.IsLetter(r) || unicode.IsNumber(r) || r == '-' || r == '_' {
 			postId += string(r)
 		}
 	}

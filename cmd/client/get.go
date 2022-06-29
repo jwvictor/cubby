@@ -99,7 +99,12 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient) {
 	case CfgViewerTui:
 		tuiviewer.RunViewer(relData, blob.Title)
 	case CfgViewerEditor:
-		newData, err := openInEditor(relData, blob.Title)
+		fileext := ""
+		contentType := types.ResolveContentType(blob.Type)
+		if contentType != nil {
+			fileext = contentType.FileExtension
+		}
+		newData, err := openInEditor(relData, blob.Title, fileext)
 		if err != nil {
 			fmt.Errorf("Failed to open editor: %s\n", err.Error())
 		}
@@ -147,7 +152,9 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient) {
 	}
 }
 
-func openInEditor(data, title string) (string, error) {
+// allow dashes + underscores in post names
+
+func openInEditor(data, title, fileext string) (string, error) {
 	envEditor := os.Getenv("EDITOR")
 	var fn string
 	for _, x := range title {
@@ -160,6 +167,9 @@ func openInEditor(data, title string) (string, error) {
 	}
 	if len(fn) < 32 {
 		fn += fmt.Sprintf("%d", rand.Int()%999999999)
+	}
+	if fileext != "" {
+		fn += "." + fileext
 	}
 	if envEditor == "" {
 		envEditor = "vim"
