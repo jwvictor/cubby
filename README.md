@@ -4,8 +4,8 @@ First, a brief Haiku on the Zen of Cubby:
 
 ```bash
 cubby put ideas 
-cubby get ideas
 cubby publish put ideas
+cubby get ideas
 ```
 
 ## A note from the author

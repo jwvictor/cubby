@@ -89,7 +89,7 @@ func init() {
 	viper.SetDefault(CfgUserDisplayName, "")
 
 	putCmd.Flags().StringVarP(&putCmdTitle, "title", "t", "", "a title for my blob")
-	putCmd.Flags().StringVarP(&putCmdType, "type", "T", "", "example: todo")
+	putCmd.Flags().StringVarP(&putCmdType, "type", "T", "markdown", "example: todo")
 	putCmd.Flags().StringVarP(&putCmdData, "data", "d", "", "example: *some* markdown")
 	putCmd.Flags().StringVarP(&putCmdTags, "tags", "g", "", "example: work urgent")
 	putCmd.Flags().StringVarP(&putCmdParentId, "parent", "1", "", "parent UUID")

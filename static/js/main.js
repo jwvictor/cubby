@@ -33,6 +33,7 @@ $(document).ready(function () {
             if(data["blobs"][0]["type"] === "markdown") {
                 let html = marked.parse(body);
                 $('#output').html(html);
+                hljs.highlightAll();
             } else {
                 $('#output').text(body);
             }
@@ -61,6 +62,7 @@ $(document).ready(function () {
             let decryptedText = aesjs.utils.utf8.fromBytes(ptxt);
             let html = marked.parse(decryptedText);
             $('#output').html(html);
+            hljs.highlightAll();
         } else {
             $('#output').text(ptxt);
         }
