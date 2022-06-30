@@ -359,6 +359,17 @@ List blobs.
 
 Usage: `cubby list`
 
+### `revert`
+
+Revert a blob to a prior version.
+
+Blob should be specified by its ID or path. The user will be prompted to view the version
+history and provide a revision number to which Cubby will revert the blob's contents.
+
+Usage: `cubby revert my:blob:path`
+
+Usage: `cubby revert blog:hello-world`
+
 ### `search`
 
 Search blobs.
