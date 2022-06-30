@@ -359,6 +359,28 @@ List blobs.
 
 Usage: `cubby list`
 
+### `attachments`
+
+View and download file attachments to blobs.
+
+Users can pass attachments with the `-a` flag to `cubby put`, e.g.:
+
+```bash
+cubby put -a README.md -2 files readme
+```
+
+The `attachments` subcommand allows you to view the attachments with `cubby attachments <blob path>`,
+which produces a list of files attached the blob. To download one or more files, which may or may
+not be encrypted, use the `-F` switch, e.g.:
+
+```bash
+cubby attachments <blob path> -F <filename> 
+```
+
+Usage: `cubby attachments <blob path> [-F <filename>]`
+
+Usage: `cubby attachments backup:file -F file.dat`
+
 ### `revert`
 
 Revert a blob to a prior version.
@@ -366,7 +388,7 @@ Revert a blob to a prior version.
 Blob should be specified by its ID or path. The user will be prompted to view the version
 history and provide a revision number to which Cubby will revert the blob's contents.
 
-Usage: `cubby revert my:blob:path`
+Usage: `cubby revert <blob path>`
 
 Usage: `cubby revert blog:hello-world`
 
@@ -388,6 +410,18 @@ By default, this subcommand takes the username and password from your `cubby-cli
 config file before running signup.
 
 Usage: `cubby signup`
+
+### `help`
+
+The most important command of all: `help`. You can use `help` (or `-h`) on both the root `cubby` command
+or on any individual subcommands. For example, to get a list of all subcommands and global options,
+run `cubby help`, but to get options for `cubby put` specifically, run `cubby put -h` (for some commands, `help`
+can be mistakenly interpreted as a blob path).
+
+Usage: `cubby help`
+
+Example: `cubby help`
+
 
 ## A note from the author
 
