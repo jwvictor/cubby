@@ -57,7 +57,15 @@ AES-128 encrypted (and decrypted) on the client side. Only ciphertext is stored 
 
 Taking a few minutes to set up and learn Cubby can save the average user a huge amount of time, effort, and mental
 overhead by providing an easy, straightforward way to store important bits of information. Take a look at the
-Use Case Examples below for ideas on where to start.
+use case examples below for ideas on where to start.
+
+## Use case examples
+
+Some example use cases for Cubby:
+
+- [Unifying shell configs across all your computers](https://public.cubbycli.com/v1/post/jason5581/cubbyrc/view)
+- [Privacy while using work computers](https://public.cubbycli.com/v1/post/jason5581/notescompanylaptop/view)
+- [A general note on the motivation for Cubby](https://public.cubbycli.com/v1/post/jason5581/note-from-the-author/view)
 
 ## Installation
 
