@@ -385,6 +385,10 @@ func (s *Server) CreateBlob(w http.ResponseWriter, r *http.Request) {
 	userId, _ := claims["user_id"].(string)
 	blob.OwnerId = userId
 	log.Printf("Creating blob: %v\n", blob)
+	if blob.Size() > 10000000 {
+		render.Render(w, r, ErrInvalidRequest(errors.New("MaxFileSizeExceeded")))
+		return
+	}
 	putErr := s.dataProvider.PutBlob(blob)
 	if putErr != nil {
 		render.Status(r, http.StatusConflict)

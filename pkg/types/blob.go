@@ -42,6 +42,14 @@ type Blob struct {
 	VersionHistory []*BlobHistoryItem     `json:"version_history,omitempty"`
 }
 
+func (blob *Blob) Size() uint64 {
+	s := uint64(len(blob.Data))
+	for _, x := range blob.RawData {
+		s += uint64(len(x.Data))
+	}
+	return s
+}
+
 func (blob *Blob) IsEncryptedAndEmpty() bool {
 	if blob.Data == "" {
 		for _, x := range blob.RawData {

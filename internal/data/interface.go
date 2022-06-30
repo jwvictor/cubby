@@ -94,12 +94,12 @@ func NewStaticFileProvider(context context.Context, outputFilename string) Cubby
 	data, err := loadBlobData(outputFilename)
 	if err != nil {
 		log.Printf("Failed to load blob data: %s\n", err.Error())
-		return nil
+		data = map[string]map[string]*types.Blob{}
 	}
 	postData, err := loadPostData(outputFilename)
 	if err != nil {
 		log.Printf("Failed to load post data: %s\n", err.Error())
-		return nil
+		postData = map[string]map[string]*types.Post{}
 	}
 	sfp := &StaticFileProvider{outputFilename: outputFilename, data: data, postChannel: make(chan *types.Post, 32), deleteChannel: make(chan *types.Blob, 32), blobChannel: make(chan *types.Blob, 32), lock: &sync.RWMutex{}, postData: postData}
 	go sfp.Run(context)
