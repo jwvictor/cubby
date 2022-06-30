@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+var (
+	grepCaseInsensitive = false
+)
+
 var grepCmd = &cobra.Command{
 	Use:   "grep",
 	Short: "Search for a substring",
@@ -48,6 +52,13 @@ var grepCmd = &cobra.Command{
 				}
 			}
 
+			origBody := body
+			if grepCaseInsensitive {
+				// Make all comparisons insensitive
+				body = strings.ToLower(body)
+				queryStr = strings.ToLower(queryStr)
+			}
+
 			if strings.Contains(body, queryStr) {
 				occIdx := strings.Index(body, queryStr)
 				n := 32
@@ -57,9 +68,9 @@ var grepCmd = &cobra.Command{
 					sIdx = 0
 				}
 				if eIdx > len(body) {
-					eIdx = len(body) - 1
+					eIdx = len(body)
 				}
-				preview := body[sIdx:eIdx]
+				preview := origBody[sIdx:eIdx]
 				preview = strings.ReplaceAll(preview, "\n", " ")
 				fmt.Printf("[%s] %s\n", id, preview)
 			}

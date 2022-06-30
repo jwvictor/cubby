@@ -94,16 +94,18 @@ func init() {
 	putCmd.Flags().StringVarP(&putCmdTags, "tags", "g", "", "example: work urgent")
 	putCmd.Flags().StringVarP(&putCmdParentId, "parent", "1", "", "parent UUID")
 	putCmd.Flags().StringVarP(&putCmdParentPath, "parentPath", "2", "", "path/to/parent")
-	putCmd.Flags().IntVarP(&putCmdImportance, "importance", "i", 0, "example: 0")
+	putCmd.Flags().IntVarP(&putCmdImportance, "importance", "I", 0, "example: 0")
 	putCmd.Flags().StringArrayVarP(&putCmdAttachFilenames, "attachment", "a", nil, "files to attach")
 	putCmd.Flags().DurationVarP(&putCmdTtl, "ttl", "X", time.Duration(0), "optional TTL (0 for no TTL)")
 
 	getPublicationCmd.Flags().StringVarP(&publishOwnerId, "publish.ownerId", "O", "", "Display name of the owner of a shared post (or empty yourself)")
-	putPublicationCmd.Flags().StringVarP(&publishPostId, "publish.postId", "I", "", "ID for the post - can be any alphanumeric string (defaults to title)")
+	putPublicationCmd.Flags().StringVarP(&publishPostId, "publish.postId", "Z", "", "ID for the post - can be any alphanumeric string (defaults to title)")
 	putPublicationCmd.Flags().StringVarP(&publishPublicationId, "publish.publicationId", "z", "", "ID for the publication this post post will belong to (optional)")
 	putPublicationCmd.Flags().StringArrayVarP(&publishPermissions, "publish.permissions", "r", nil, "Permissions for the post - can be `public` or a user ID")
 
 	attachmentsCmd.Flags().StringArrayVarP(&attachmentCmdFiles, "files", "F", nil, "files to download")
+
+	grepCmd.Flags().BoolVarP(&grepCaseInsensitive, "case-insensitive", "i", false, "toggle case insensitivity")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
