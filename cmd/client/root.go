@@ -108,6 +108,8 @@ func init() {
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(getCmd)
+	rootCmd.AddCommand(catCmd)
+	rootCmd.AddCommand(grepCmd)
 	rootCmd.AddCommand(revertCmd)
 	rootCmd.AddCommand(attachmentsCmd)
 	rootCmd.AddCommand(listCmd)

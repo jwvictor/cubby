@@ -45,7 +45,7 @@ var getCmd = &cobra.Command{
 			log.Printf("Error: %s\n", err.Error())
 			return
 		} else {
-			displayBlob(blob, client)
+			displayBlob(blob, client, nil, nil)
 		}
 	},
 }
@@ -75,7 +75,7 @@ func decryptData(data []byte) ([]byte, error) {
 	return plainBody, nil
 }
 
-func displayBlob(blob *types.Blob, client *client.CubbyClient) {
+func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *string, bodyOnlyOverride *bool) {
 	bs, err := json.MarshalIndent(blob, "", "    ")
 	if err != nil {
 		log.Printf("Error: %s\n", err.Error())
@@ -93,6 +93,14 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient) {
 			return
 		}
 		relData += string(plainBody)
+	}
+
+	if viewerOverride != nil {
+		userViewer = *viewerOverride
+	}
+
+	if bodyOnlyOverride != nil {
+		bodyOnly = *bodyOnlyOverride
 	}
 
 	switch userViewer {
@@ -262,7 +270,7 @@ func resultsViewer(results []*types.Blob, client *client.CubbyClient) bool {
 				blob = results[idx]
 			}
 
-			displayBlob(blob, client)
+			displayBlob(blob, client, nil, nil)
 		}
 	}
 }
