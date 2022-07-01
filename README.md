@@ -279,6 +279,41 @@ To address one of its children,  however, such as `helloworld`, we would use
 If we add a child below `helloworld` called `hw_child`, we could address it with the
 path `posts:helloworld:hw_child`, i.e. `cubby get posts:helloworld:hw_child`.
 
+#### Using prefix paths for maximum finger speed
+
+The colon-separated notation gives us an easy way to name our blobs and locate them
+within their hierarchical blobspace. But we're still doing a lot of unnecessary typing!
+That's where prefix paths come in. Instead of providing the full blob titles as the
+segments in a path, you can instead use _prefixes_ wherever the use of such prefix
+would not create ambiguity. (If it does create ambiguity, an arbitrary response wil
+be returned.)
+
+Say, for example, you have a blobspace that has these blobs:
+
+```text
+ places
+  alabama
+  austria
+  burbank
+```
+
+If I'm looking up `burbank`, I could run:
+
+```bash
+cubby get p:b
+```
+
+Since there is only one root blob starting with `p` and one child of that root 
+starting with `b`, the path `p:b` is unambiguous. If, however, I wanted to look
+up `austria`, I'd need to instead do:
+
+```bash
+cubby get p:au
+```
+
+Because there are two blobs under `places` starting with `a`, I need to provide an
+extra letter to make the path unambiguous.
+
 ### Shared blobs and publications
 
 Any blob -- encrypted with any key or in plaintext -- can be "published" via Cubby. The details of how

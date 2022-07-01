@@ -38,12 +38,14 @@ $(document).ready(function () {
                 $('#output').text(body);
             }
             $('#secrets').hide();
+            document.title = data["blobs"][0]["title"] + " - Cubby";
         } else if(encBody) {
             // Encrypted share
             let bytes = _base64ToArrayBuffer(encBody);
             console.log("Decoded bytes: ", bytes)
             encryptedBody = new Uint8Array(bytes);
             $('#output').html("<pre>Encrypted bytes</pre>");
+            document.title = data["blobs"][0]["title"] + " - Cubby";
         }
         console.log(data)
     })
