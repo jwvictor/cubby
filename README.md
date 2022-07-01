@@ -365,29 +365,27 @@ keys that are nested in the YAML file, e.g. `crypto.mode`, where `mode` is under
 
 ## Cubby subcommands
 
-### `put`
+### `attachments`
 
-Puts a new blob into Cubby.
+View and download file attachments to blobs.
 
-Usage: `cubby put <key> <value>`
+Users can pass attachments with the `-a` flag to `cubby put`, e.g.:
 
-Example: `cubby put myemail "jason@cubbycli.com"`
+```bash
+cubby put -a README.md files:readme
+```
 
-Optional parameters include:
+The `attachments` subcommand allows you to view the attachments with `cubby attachments <blob path>`,
+which produces a list of files attached the blob. To download one or more files, which may or may
+not be encrypted, use the `-F` switch, e.g.:
 
-- `-a`: attach file to blob, e.g. `-a file.txt`
-- `-2`: add blob as a child to another blob (specified by colon-delimited path), e.g. `-2 path:to:parent`
-- `-g`: add a tag, e.g. `-g work`
-- `-X`: add a TTL, e.g. `-X 365d`
+```bash
+cubby attachments <blob path> -F <filename> 
+```
 
-### `push`
+Usage: `cubby attachments <blob path> [-F <filename>]`
 
-Appends a single line of text to a blob.
-
-Usage: `cubby push <path> <new line>`
-
-Usage: `cubby push notes "TODO: buy thanksgiving turkey"`
-
+Usage: `cubby attachments backup:file -F file.dat`
 
 ### `cat`
 
@@ -432,6 +430,17 @@ Optional parameters include:
 
 - `-i`: case insensitive search 
 
+### `help`
+
+The most important command of all: `help`. You can use `help` (or `-h`) on both the root `cubby` command
+or on any individual subcommands. For example, to get a list of all subcommands and global options,
+run `cubby help`, but to get options for `cubby put` specifically, run `cubby put -h` (for some commands, `help`
+can be mistakenly interpreted as a blob path).
+
+Usage: `cubby help`
+
+Example: `cubby help`
+
 ### `list`
 
 List blobs.
@@ -440,27 +449,28 @@ List blobs.
 
 Usage: `cubby list`
 
-### `attachments`
+### `push`
 
-View and download file attachments to blobs.
+Appends a single line of text to a blob.
 
-Users can pass attachments with the `-a` flag to `cubby put`, e.g.:
+Usage: `cubby push <path> <new line>`
 
-```bash
-cubby put -a README.md files:readme
-```
+Usage: `cubby push notes "TODO: buy thanksgiving turkey"`
 
-The `attachments` subcommand allows you to view the attachments with `cubby attachments <blob path>`,
-which produces a list of files attached the blob. To download one or more files, which may or may
-not be encrypted, use the `-F` switch, e.g.:
+### `put`
 
-```bash
-cubby attachments <blob path> -F <filename> 
-```
+Puts a new blob into Cubby.
 
-Usage: `cubby attachments <blob path> [-F <filename>]`
+Usage: `cubby put <key> <value>`
 
-Usage: `cubby attachments backup:file -F file.dat`
+Example: `cubby put myemail "jason@cubbycli.com"`
+
+Optional parameters include:
+
+- `-a`: attach file to blob, e.g. `-a file.txt`
+- `-2`: add blob as a child to another blob (specified by colon-delimited path), e.g. `-2 path:to:parent`
+- `-g`: add a tag, e.g. `-g work`
+- `-X`: add a TTL, e.g. `-X 365d`
 
 ### `revert`
 
@@ -491,17 +501,6 @@ By default, this subcommand takes the username and password from your `cubby-cli
 config file before running signup.
 
 Usage: `cubby signup`
-
-### `help`
-
-The most important command of all: `help`. You can use `help` (or `-h`) on both the root `cubby` command
-or on any individual subcommands. For example, to get a list of all subcommands and global options,
-run `cubby help`, but to get options for `cubby put` specifically, run `cubby put -h` (for some commands, `help`
-can be mistakenly interpreted as a blob path).
-
-Usage: `cubby help`
-
-Example: `cubby help`
 
 
 ## A note from the author
