@@ -388,6 +388,17 @@ Usage: `cubby push <path> <new line>`
 
 Usage: `cubby push notes "TODO: buy thanksgiving turkey"`
 
+
+### `cat`
+
+Output the body of a blob to STDOUT.
+
+Effectively, `cubby cat` is equivalent to `cubby get -b=true -V=stdout`.
+
+Usage: `cubby cat <key>`
+
+Example: `cubby cat todo`
+
 ### `get`
 
 View and update a blob.
@@ -407,6 +418,19 @@ Optional parameters include:
 
 - `-V`: override configured viewer (one of `editor`, `stdout`, or `viewer`) -- `stdout` is often used when calling Cubby from a script 
 - `-b`: when using stdout, shows body only (default: true)
+
+### `grep`
+
+Pull down each blob in your blobspace, decrypt it, and search it for a substring. Regular
+expression support is forthcoming.
+
+Usage: `cubby grep [-i] <substring>`
+
+Example: `cubby grep bonjour`
+
+Optional parameters include:
+
+- `-i`: case insensitive search 
 
 ### `list`
 
