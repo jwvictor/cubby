@@ -65,8 +65,8 @@ Some example use cases for Cubby:
 
 - [Unifying shell configs across all your computers](https://public.cubbycli.com/v1/post/jason5581/cubbyrc/view)
 - [Privacy while using work computers](https://public.cubbycli.com/v1/post/jason5581/notescompanylaptop/view)
-- [A general note on the motivation for Cubby](https://public.cubbycli.com/v1/post/jason5581/note-from-the-author/view)
 - [Writing a developer blog with Cubby](https://public.cubbycli.com/v1/post/jason5581/blogging-with-cubby/view)
+- [A general note on the motivation for Cubby](https://public.cubbycli.com/v1/post/jason5581/note-from-the-author/view)
 
 ## Installation
 
@@ -161,18 +161,15 @@ Cubby encryption passphrase.
 
 To accomplish this, we'll add some new things to our `cubby put`:
 
-* We'll introduce the type (`-T`) flag. This flag allows you to set a 
-  "file type" for the blob. For our blog post, we'll use the type `markdown` so Cubby knows our data
-  can be rendered using a Markdown parser. 
 * We'll introduce the encryption key (`-K`) flag. This flag allows you to use a different encryption key
   from the one configured in your `cubby-client.yaml` file. Here, we're setting the passphrase to
   `share_password`.
-* We'll add in the `-2` flag to specify the _path_ of the parent under which to put this  blob.
+* We'll make this blob as a child blob under the parent `posts`.
 
 All together, it looks like this:
 
 ```bash
-cubby put -T markdown -2 posts -K share_password helloworld
+cubby put -K share_password posts:helloworld
 ```
 
 In order to see how this created a child blob under the parent `posts`, run:
@@ -237,7 +234,7 @@ that, we simply pass `-C none` to our `cubby put` (instead of `-K <key>`. This w
 the encryption mode to `none`, and no encryption will happen at all. For example:
 
 ```bash
-cubby put -2 posts -T markdown -C none plaintext_post
+cubby put -C none posts:plaintext_post
 cubby get posts:plaintext_post # edit the post contents
 cubby publish put posts:plaintext_post
 ```
@@ -290,10 +287,10 @@ to consider are the _type_ of the blob and its encryption settings.
 
 #### Types for shared blobs
 
-Currently, the only "special" type for shared blobs is Markdown, where we pass `-T markdown` to the `cubby put`
-command, as demonstrated in the walkthrough above. Blobs with type set to `markdown` will be treated like
+Currently, the only "special" type for shared blobs is Markdown, which is also the default type for a new blob, 
+as demonstrated in the walkthrough above. Blobs with type set to `markdown` will be treated like
 "blog posts" -- they will be visible both via API and on the web at a generated URL. On the web, the Markdown 
-will be properly converted into HTML.
+will be properly converted into HTML and syntax highlighting will be applied to code snippets.
 
 #### Encryption settings for shared blobs
 
@@ -375,7 +372,7 @@ View and download file attachments to blobs.
 Users can pass attachments with the `-a` flag to `cubby put`, e.g.:
 
 ```bash
-cubby put -a README.md -2 files readme
+cubby put -a README.md files:readme
 ```
 
 The `attachments` subcommand allows you to view the attachments with `cubby attachments <blob path>`,
