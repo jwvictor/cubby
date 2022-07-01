@@ -2,13 +2,20 @@
 
 [www.cubbycli.com](https://www.cubbycli.com)
 
-First, a brief Haiku on the Zen of Cubby:
-
 ```bash
 cubby put ideas 
 cubby publish put ideas
 cubby get ideas
 ```
+
+## Main features
+* Command line-based, free, open source, cloud note-taking and storage tool
+* End-to-end AES-encrypted by default 
+* Share personal notes, config files, and data between your computers
+* Publish potentially sensitive data using end-to-end encrypted web sharing
+* Collaborate with other Cubby users securely and efficiently
+* Maintain privacy in the presence of spyware 
+* 100MB of storage totally free forever 
 
 ## Preamble
 
