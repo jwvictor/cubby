@@ -151,25 +151,24 @@ cubby put posts
 ```
 
 We're actually not going to use `posts` to store content -- it's being used kind of like a "directory" to
-organize our posts in one spot. 
+organize our posts in one spot.
 
 Let's make a child blob of `posts` (like a "file" in the "directory") that will actually store a 
-blog post we'll share with the world. In this example, we want to encrypt our post so that a reader
-needs to enter a passphrase in order to decrypt and view the content. However, we want this to be a 
-passphrase we're comfortable sharing -- in other words, we don't want to reuse our standard
-Cubby encryption passphrase.
+blog post we'll share with the world. This first one, like most blog posts, will not be encrypted;
+we want anyone who wants to read it to be able to read it. (Of course, all data is _delivered_
+over a secure connection, regardless of user encryption settings.)
 
 To accomplish this, we'll add some new things to our `cubby put`:
 
-* We'll introduce the encryption key (`-K`) flag. This flag allows you to use a different encryption key
-  from the one configured in your `cubby-client.yaml` file. Here, we're setting the passphrase to
-  `share_password`.
-* We'll make this blob as a child blob under the parent `posts`.
+* We'll introduce the encryption mode (`-C`) flag. This flag allows you to specify what type of user-level
+  of encryption to use for this blob. Your is defaulted to `symmetric` encryption in `cubby-client.yaml` file,
+  so for a blob we want to share publicly, we need to override that setting and make it unencrypted with `-C none`.
+* We'll make this blob as a child blob under the parent `posts` using paths (as discussed under "Concepts").
 
 All together, it looks like this:
 
 ```bash
-cubby put -K share_password posts:helloworld
+cubby put -C none posts:helloworld
 ```
 
 In order to see how this created a child blob under the parent `posts`, run:
@@ -181,11 +180,10 @@ cubby list
 This will list out your blobs, suitably indented to illustrate parent-child relationships. You'll see your
 `helloworld` blob is under `posts`, for example.
 
-Now let's open up our post and edit it to contain some content for our blog post (we'll need to pass the 
-required passphrase with `-K` when we interact with this blob):
+Now let's open up our post and edit it to contain some content for our blog post:
 
 ```bash
-cubby get posts:helloworld -K share_password
+cubby get posts:helloworld
 ```
 
 You've probably noticed that paths are represented in Cubby with a colon (`:`). Anywhere that you're 
@@ -217,27 +215,35 @@ Web: https://public.cubbycli.com:443/v1/post/jason8081/helloworld/view
 API: https://public.cubbycli.com:443/v1/post/jason8081/helloworld
 ```
 
-If you go the URL listed under `Web`, you'll see a page prompting you to enter the encryption passphrase.
-Once you enter `share_password` and click "Decrypt", the content of your post will appear as fully
-rendered HTML.
-
-To make changes to your post, simply edit your blob with:
+If you go the URL listed under `Web`, you'll see your post fully rendered as HTML. To make changes to your post, 
+simply edit your blob with:
 
 ```bash
-cubby get posts:helloworld -K share_password
+cubby get posts:helloworld
 ```
 
 Any changes you make will be automatically reflected at the post URL.
 
-But what if you want to use _no_ encryption at all, so anyone can read your blog post? For
-that, we simply pass `-C none` to our `cubby put` (instead of `-K <key>`. This will override 
-the encryption mode to `none`, and no encryption will happen at all. For example:
+But what if you want to share something secret, and you only want a specific audience to be
+able to decrypt your message? Easy enough. In this last example, we'll still make our post publicly
+accessible, but we'll encrypt it so the user has to enter an encryption passphrase when they
+go to read it.
+
+However, we want this to be a passphrase we're comfortable sharing -- in other words, we don't want to reuse our standard
+Cubby encryption passphrase, which secures our _personal_ data.
+
+To accomplish this, we'll introduce the encryption key (`-K`) flag. This flag allows you to use a different encryption key
+from the one configured in your `cubby-client.yaml` file. Here, we're setting the passphrase to `share_password`.
 
 ```bash
-cubby put -C none posts:plaintext_post
-cubby get posts:plaintext_post # edit the post contents
-cubby publish put posts:plaintext_post
+cubby put -K share_password posts:secret_post
+cubby get -K share_password posts:secret_post # edit the post contents
+cubby publish put posts:secret_post
 ```
+
+When you go to the web link returned by `cubby publish`, you'll see a page prompting you to enter the encryption passphrase.
+Once you enter `share_password` and click "Decrypt", the content of your post will appear as fully
+rendered HTML.
 
 Now, when you go to the URL for that post, no encryption password will be required in order
 to view the content.
