@@ -17,6 +17,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -35,6 +36,7 @@ var getCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
+		rand.Seed(time.Now().Unix())
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
@@ -282,6 +284,7 @@ var searchCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
+		rand.Seed(time.Now().Unix())
 		err := client.Authenticate()
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())

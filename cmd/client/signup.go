@@ -11,7 +11,6 @@ import (
 )
 
 func generateDisplayName(email string) string {
-	rand.Seed(time.Now().Unix())
 	lidx := strings.Index(email, "@")
 	if lidx < 0 {
 		lidx = len(email)
@@ -27,6 +26,7 @@ var profileCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
+		rand.Seed(time.Now().Unix())
 		err := client.Authenticate()
 		if err != nil {
 			fmt.Printf("Unable to get authenticate with error: %s\n\nAre you sure you've signed up?\n", err.Error())
@@ -51,6 +51,7 @@ var profileSearchCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
+		rand.Seed(time.Now().Unix())
 		err := client.Authenticate()
 		if err != nil {
 			fmt.Printf("Unable to get authenticate with error: %s\n\nAre you sure you've signed up?\n", err.Error())
@@ -75,6 +76,7 @@ var signupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
+		rand.Seed(time.Now().Unix())
 		disp := viper.GetString(CfgUserDisplayName)
 		if disp == "" {
 			disp = generateDisplayName(viper.GetString(CfgUserEmail))
