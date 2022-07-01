@@ -162,7 +162,7 @@ over a secure connection, regardless of user encryption settings.)
 To accomplish this, we'll add some new things to our `cubby put`:
 
 * We'll introduce the encryption mode (`-C`) flag. This flag allows you to specify what type of user-level
-  of encryption to use for this blob. Your is defaulted to `symmetric` encryption in `cubby-client.yaml` file,
+  of encryption to use for this blob. Yours is defaulted to `symmetric` encryption in `cubby-client.yaml` file,
   so for a blob we want to share publicly, we need to override that setting and make it unencrypted with `-C none`.
 * We'll make this blob as a child blob under the parent `posts` using paths (as discussed under "Concepts").
 
