@@ -120,7 +120,8 @@ func init() {
 	rootCmd.AddCommand(pushCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(searchCmd)
-	rootCmd.AddCommand(tuiCmd)
+	// Disabling TUI until we can make it better
+	//rootCmd.AddCommand(tuiCmd)
 	rootCmd.AddCommand(putCmd)
 
 	rootCmd.AddCommand(publishCmd)
