@@ -29,11 +29,12 @@ Notes and to-do lists become siloed between "work computer" and "personal comput
 to always be at the right computer when having thoughts or questions about a particular domain.
 
 Alas, Cubby is here to fix all these problems. It was designed specifically for the highly technical, 
-CLI-loving programmer type. In Cubby, viewing your to-do list takes some 10 keystrokes, whereas viewing a
-to-do list on Notion would take some 5 clicks and _then_ 10 keystrokes!
+CLI-loving programmer type. In Cubby, viewing your to-do list takes some 4 keystrokes with the
+standard set of aliases, whereas viewing a to-do list on Notion would involve clicking around clumsily 
+like a mere technical peasant.
 
-Add that up and you're losing years of your life to clunky tools designed for people who don't know how to 
-use `vim` (and refuse to learn).
+Add up all that time and you're losing years of your life to clunky tools designed for people who don't know how to 
+use `vim` and refuse to learn.
 
 All that to say -- try Cubby now. There's a super quick and easy install script that sets up your configs,
 downloads the binary, and makes an account if necessary. Five minutes to learn Cubby now may save you
