@@ -12,4 +12,5 @@ type UserProvider interface {
 	GetById(id string) (*User, error)
 	GetByDisplayName(name string) (*User, error)
 	GetByEmail(email string) (*User, error)
+	GetStats() (int, []User, error)
 }

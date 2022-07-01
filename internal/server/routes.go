@@ -21,12 +21,13 @@ import (
 )
 
 type Server struct {
-	portNum      int
-	router       *chi.Mux
-	dataProvider data.CubbyDataProvider
-	jwtAuth      *jwtauth.JWTAuth
-	userProvider users.UserProvider
-	staticData   staticData
+	portNum       int
+	router        *chi.Mux
+	dataProvider  data.CubbyDataProvider
+	jwtAuth       *jwtauth.JWTAuth
+	userProvider  users.UserProvider
+	staticData    staticData
+	adminPassword string
 }
 
 type staticData struct {
@@ -72,7 +73,7 @@ func mimeType(fn string) string {
 	return "text/plain"
 }
 
-func NewServer(portNum int) *Server {
+func NewServer(portNum int, adminPass string) *Server {
 	usersStore, err := users.NewUsersFileStore("cubby-users.json")
 	if err != nil {
 		panic(err)
@@ -97,12 +98,13 @@ func NewServer(portNum int) *Server {
 	}
 
 	server := &Server{
-		portNum:      portNum,
-		router:       router,
-		dataProvider: data.NewStaticFileProvider(context.Background(), "./data"),
-		jwtAuth:      tokenAuth,
-		userProvider: usersStore,
-		staticData:   staticData{shareHtml: shareHtml, splashHtml: splashHtml},
+		portNum:       portNum,
+		router:        router,
+		dataProvider:  data.NewStaticFileProvider(context.Background(), "./data"),
+		jwtAuth:       tokenAuth,
+		userProvider:  usersStore,
+		staticData:    staticData{shareHtml: shareHtml, splashHtml: splashHtml},
+		adminPassword: adminPass,
 	}
 	router.Get("/", server.SplashPage)
 	router.Route("/static", func(staticRouter chi.Router) {
@@ -124,6 +126,7 @@ func NewServer(portNum int) *Server {
 
 		// Version route
 		v1Router.Get("/version", server.GetVersion)
+		v1Router.Post("/stats", server.GetStats)
 
 		// Authenticated post routes
 		v1Router.Route("/posts", func(postsRouter chi.Router) {
@@ -196,6 +199,17 @@ func (b *PostRequest) Bind(r *http.Request) error {
 func (b *BlobRequest) Bind(r *http.Request) error {
 	if b.Blob == nil {
 		return errors.New("missing required Blob fields")
+	}
+	return nil
+}
+
+type StatsRequest struct {
+	*types.AdminRequest
+}
+
+func (b *StatsRequest) Bind(r *http.Request) error {
+	if b.AdminPassword == "" {
+		return errors.New("missing required auth fields")
 	}
 	return nil
 }
@@ -452,6 +466,38 @@ func (s *Server) ViewPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) GetStats(w http.ResponseWriter, r *http.Request) {
+	data := &StatsRequest{}
+	if err := render.Bind(r, data); err != nil {
+		render.Render(w, r, ErrInvalidRequest(err))
+		return
+	}
+	if data.AdminPassword != s.adminPassword {
+		render.Render(w, r, ErrUnauthorized)
+		return
+	}
+	ct, users, err := s.userProvider.GetStats()
+	if err != nil {
+		render.Render(w, r, ErrNotFound)
+		return
+
+	}
+	var resps []types.UserResponse
+	for _, user := range users {
+		resp := types.UserResponse{
+			Id:          user.Id,
+			Email:       user.Email,
+			DisplayName: user.DisplayName,
+		}
+		resps = append(resps, resp)
+	}
+	response := types.AdminResponse{
+		NumUsers:  ct,
+		SomeUsers: resps,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
 func (s *Server) GetVersion(w http.ResponseWriter, r *http.Request) {
 	response := types.VersionResponse{
 		ServerVersion:       types.ServerVersion,
@@ -465,7 +511,6 @@ func (s *Server) GetVersion(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value("post").(*types.Post)
 	relBlob := s.dataProvider.GetBlob(post.BlobId, post.OwnerId) // this has been shared to me so this is ok
-	log.Printf("Got blob for post: %v\n", relBlob)
 	if relBlob == nil {
 		render.Render(w, r, ErrNotFound)
 		return
@@ -528,7 +573,6 @@ func (s *Server) BlobsCtx(next http.Handler) http.Handler {
 		}
 		if queryStr := chi.URLParam(r, "query"); queryStr != "" {
 			blobs = s.dataProvider.QueryBlobs(queryStr, userId)
-			log.Printf("Returning %d blobs for requesting user %s (query %s)...\n", len(blobs), userId, queryStr)
 			for _, b := range blobs {
 				if b.OwnerId != userId {
 					render.Render(w, r, ErrNotFound)

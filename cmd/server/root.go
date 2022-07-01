@@ -10,11 +10,13 @@ import (
 const (
 	CfgPort       = "port"
 	CfgConfigFile = "config"
+	CfgAdminPass  = "admin.password"
 )
 
 var (
-	cfgFile string = ""
-	portNum int
+	cfgFile   string = ""
+	adminPass string = ""
+	portNum   int
 )
 
 var rootCmd = &cobra.Command{
@@ -33,8 +35,10 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, CfgConfigFile, "", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&adminPass, CfgAdminPass, "A", "", "admin password for stats endpoints")
 	rootCmd.PersistentFlags().IntVarP(&portNum, CfgPort, "p", 8080, "example: -p 6969")
 	viper.BindPFlag(CfgPort, rootCmd.PersistentFlags().Lookup(CfgPort))
+	viper.BindPFlag(CfgAdminPass, rootCmd.PersistentFlags().Lookup(CfgAdminPass))
 	viper.SetDefault(CfgPort, 8888)
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(serveCmd)

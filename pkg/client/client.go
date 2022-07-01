@@ -71,6 +71,38 @@ func (c *CubbyClient) FetchInstallScript(url string) ([]byte, error) {
 	return body, nil
 }
 
+func (c *CubbyClient) AdminStats(adminPass string) (*types.AdminResponse, error) {
+	url := fmt.Sprintf("%s:%d/v1/stats", c.host, c.port)
+	jsonStr, err := json.Marshal(&types.AdminRequest{
+		AdminPassword: adminPass,
+	})
+	if err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	if resp.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("Failed to get stats (%d): %s.", resp.StatusCode, string(body)))
+	}
+	var tokens *types.AdminResponse
+	err = json.Unmarshal(body, &tokens)
+	if err != nil {
+		return nil, err
+	}
+	return tokens, nil
+
+}
+
 func (c *CubbyClient) Versions() (*types.VersionResponse, error) {
 	url := fmt.Sprintf("%s:%d/v1/version", c.host, c.port)
 	req, err := http.NewRequest("GET", url, nil)
