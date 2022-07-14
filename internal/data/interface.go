@@ -249,7 +249,8 @@ func (t *StaticFileProvider) getUserBlobs(userId string) map[string]*types.Blob 
 func (t *StaticFileProvider) resolveChildren(blob *types.Blob) *types.Blob {
 	b := blob.Clone()
 	for _, id := range b.ChildIds {
-		b.Children = append(b.Children, t.resolveChildren(t.GetBlob(id, blob.OwnerId)))
+		childBlob := t.GetBlob(id, blob.OwnerId) // GetBlob resolves the children
+		b.Children = append(b.Children, childBlob)
 	}
 	return b
 }

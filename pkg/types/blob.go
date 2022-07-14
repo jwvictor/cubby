@@ -112,6 +112,22 @@ func cloneAttachments(attachments []BlobBinaryAttachment) []BlobBinaryAttachment
 	return cloned
 }
 
+func cloneBlobArray(ss []*Blob) []*Blob {
+	var out []*Blob
+	for _, x := range ss {
+		out = append(out, x)
+	}
+	return out
+}
+
+func cloneStrArray(ss []string) []string {
+	var out []string
+	for _, x := range ss {
+		out = append(out, x)
+	}
+	return out
+}
+
 func (b *Blob) Clone() *Blob {
 	return &Blob{
 		Id:             b.Id,
@@ -122,8 +138,8 @@ func (b *Blob) Clone() *Blob {
 		Importance:     b.Importance,
 		Tags:           b.Tags,
 		Deleted:        b.Deleted,
-		ChildIds:       b.ChildIds,
-		Children:       b.Children,
+		ChildIds:       cloneStrArray(b.ChildIds),
+		Children:       cloneBlobArray(b.Children),
 		OwnerId:        b.OwnerId,
 		ParentId:       b.ParentId,
 		VersionHistory: b.VersionHistory,
