@@ -120,6 +120,7 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 		}
 
 		if newData != relData {
+			fmt.Printf("New data != relData\n")
 
 			newTags := extractTags(newData)
 			blob.Tags = append(blob.Tags, newTags...)
@@ -147,10 +148,13 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 				// Not encrypted case
 				blob.Data = newData
 			}
+
+			blob.VersionHistory = nil
+
 			//fmt.Printf("PUTTING THIS : \n%+v\n\n", blob)
 			_, err := client.PutBlob(blob)
 			if err != nil {
-				fmt.Errorf("Failed to update blob: %s\n", err.Error())
+				fmt.Printf("Failed to update blob: %s\n", err.Error())
 			}
 		}
 	case CfgViewerStdout:
