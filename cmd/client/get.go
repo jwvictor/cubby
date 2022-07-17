@@ -120,8 +120,6 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 		}
 
 		if newData != relData {
-			fmt.Printf("New data != relData\n")
-
 			newTags := extractTags(newData)
 			blob.Tags = append(blob.Tags, newTags...)
 			blob.Tags = deduplicateTags(blob.Tags)
