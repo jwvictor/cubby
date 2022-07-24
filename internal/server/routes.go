@@ -510,7 +510,7 @@ func (s *Server) GetVersion(w http.ResponseWriter, r *http.Request) {
 	response := types.VersionResponse{
 		ServerVersion:       types.ServerVersion,
 		LatestClientVersion: types.ClientVersion,
-		MinClientVersion:    types.ClientVersion,
+		MinClientVersion:    types.ClientMinVersion,
 		UpgradeScriptUrl:    "https://www.cubbycli.com/static/install.sh",
 	}
 	json.NewEncoder(w).Encode(response)
