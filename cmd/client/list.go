@@ -8,9 +8,10 @@ import (
 )
 
 func renderSkeleton(blob *types.BlobSkeleton, indent int) string {
+	sep := ". "
 	var out string
 	for i := 0; i < indent; i++ {
-		out += " "
+		out += sep
 	}
 	out += blob.Title + "\n"
 	for _, child := range blob.Children {
