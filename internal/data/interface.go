@@ -22,6 +22,7 @@ type CubbyDataProvider interface {
 	GetBlobByPath(path, userId string) *types.Blob
 	QueryBlobs(blobId, userId string) []*types.Blob
 	ListBlobs(userId string) []*types.BlobSkeleton
+	ListBlobChildren(userId, blobId string) []*types.BlobSkeleton
 	PutBlob(blob *types.Blob) error
 
 	PutPost(post *types.Post) error
@@ -274,6 +275,18 @@ func blobToSkeleton(blob *types.Blob) *types.BlobSkeleton {
 		b.Children = append(b.Children, blobToSkeleton(child))
 	}
 	return b
+}
+
+func (t *StaticFileProvider) ListBlobChildren(userId, blobId string) []*types.BlobSkeleton {
+	data := t.getUserBlobs(userId)
+	t.lock.RLock()
+	defer t.lock.RUnlock()
+	var result []*types.BlobSkeleton
+	if relBlob, ok := data[blobId]; ok {
+		blob := t.resolveChildren(relBlob)
+		result = append(result, blobToSkeleton(blob))
+	}
+	return result
 }
 
 func (t *StaticFileProvider) ListBlobs(userId string) []*types.BlobSkeleton {

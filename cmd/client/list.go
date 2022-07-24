@@ -31,7 +31,16 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
 		}
-		blob, err := client.ListBlobs()
+		var listBlobId *string
+		if len(args) > 0 {
+			blob, err := client.GetBlobById(args[0])
+			if err != nil {
+				fmt.Printf("Error querying blob: %s\n", args[0])
+				return
+			}
+			listBlobId = &blob.Id
+		}
+		blob, err := client.ListBlobs(listBlobId)
 		if err != nil {
 			log.Printf("Error: %s\n", err.Error())
 		} else {

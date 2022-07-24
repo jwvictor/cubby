@@ -154,6 +154,7 @@ func NewServer(portNum int, adminPass string) *Server {
 			blobsRouter.Use(jwtauth.Authenticator)
 			blobsRouter.Post("/", server.CreateBlob)
 			blobsRouter.Get("/list", server.ListBlobs)
+			blobsRouter.Get("/sublist/{listBlobId}", server.ListBlobs)
 			blobsRouter.Route("/search/{query}", func(searchRouter chi.Router) {
 				searchRouter.Use(server.BlobsCtx)
 				searchRouter.Get("/", SearchBlobs)
@@ -327,7 +328,14 @@ func (s *Server) Authenticate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) ListBlobs(w http.ResponseWriter, r *http.Request) {
 	_, claims, _ := jwtauth.FromContext(r.Context())
 	userId, _ := claims["user_id"].(string)
-	data := s.dataProvider.ListBlobs(userId)
+
+	var data []*types.BlobSkeleton
+	if blobId := chi.URLParam(r, "listBlobId"); blobId != "" {
+		data = s.dataProvider.ListBlobChildren(userId, blobId)
+	} else {
+		data = s.dataProvider.ListBlobs(userId)
+	}
+
 	resp := &types.BlobList{RootBlobs: data}
 	err := json.NewEncoder(w).Encode(resp)
 	if err != nil {

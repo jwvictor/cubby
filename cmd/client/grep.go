@@ -23,7 +23,7 @@ var grepCmd = &cobra.Command{
 		if err != nil {
 			log.Printf("Error: Authentication - %s\n", err.Error())
 		}
-		blob, err := client.ListBlobs()
+		blob, err := client.ListBlobs(nil)
 		if err != nil {
 			log.Printf("Error: %s\n", err.Error())
 			return

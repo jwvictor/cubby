@@ -519,11 +519,14 @@ func (c *CubbyClient) SearchBlob(query string) ([]*types.Blob, error) {
 	return blob.Blobs, nil
 }
 
-func (c *CubbyClient) ListBlobs() ([]*types.BlobSkeleton, error) {
+func (c *CubbyClient) ListBlobs(blobIdOpt *string) ([]*types.BlobSkeleton, error) {
 	if !c.checkAuthExists() {
 		return nil, errors.New("NotAuthenticated")
 	}
 	url := fmt.Sprintf("%s:%d/v1/blobs/list", c.host, c.port)
+	if blobIdOpt != nil {
+		url = fmt.Sprintf("%s:%d/v1/blobs/sublist/%s", c.host, c.port, *blobIdOpt)
+	}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
