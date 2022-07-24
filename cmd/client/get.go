@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/jwvictor/cubby/cmd/client/tuiviewer"
 	"github.com/jwvictor/cubby/pkg/client"
@@ -77,6 +78,25 @@ func decryptData(data []byte) ([]byte, error) {
 	return plainBody, nil
 }
 
+func hasChanged(blob *types.Blob, relData string, client *client.CubbyClient) (bool, error) {
+	updatedBlob, err := client.GetBlobById(blob.Id)
+	if err != nil {
+		return false, err
+	}
+
+	updatedEncBody := getBlobEncryptedBody(updatedBlob)
+	updatedRelData, done := extractRelData(updatedBlob, updatedEncBody)
+	if done {
+		return false, errors.New("DecryptionFailed")
+	}
+
+	if updatedRelData != relData {
+		return true, nil
+	} else {
+		return false, nil
+	}
+}
+
 func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *string, bodyOnlyOverride *bool) {
 	bs, err := json.MarshalIndent(blob, "", "    ")
 	if err != nil {
@@ -86,15 +106,9 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 	userViewer := viper.GetString(CfgViewer)
 	encBody := getBlobEncryptedBody(blob)
 
-	relData := blob.Data
-
-	if encBody != nil {
-		plainBody, err := decryptData(encBody.Data)
-		if err != nil {
-			fmt.Errorf("Error: %s\n", err.Error())
-			return
-		}
-		relData += string(plainBody)
+	relData, done := extractRelData(blob, encBody)
+	if done {
+		return
 	}
 
 	if viewerOverride != nil {
@@ -120,6 +134,28 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 		}
 
 		if newData != relData {
+			if changed, err := hasChanged(blob, relData, client); err == nil {
+				if changed {
+					// Ask if user really wants to save it
+					v, err := readFromStdin("This blob has changed since you started editing it. Are you sure you want to overwrite it? (y/N) ")
+					if err != nil {
+						fmt.Printf("Failed to read from stdin, quitting...\n")
+						return
+					} else {
+						vl := strings.ToLower(v)
+						if strings.HasPrefix(vl, "y") {
+							// yes
+						} else {
+							// no
+							fmt.Printf("Aborting save. Printing data to STDOUT in case you want to save it some other way:\n\n%s\n", newData)
+							return
+						}
+					}
+				}
+			} else {
+				// failed to detect changes
+				fmt.Printf("Failed to fetch old version in order to run overwrite protection checks: aborting save. Printing data to STDOUT in case you want to save it some other way:\n\n%s\n", newData)
+			}
 			newTags := extractTags(newData)
 			blob.Tags = append(blob.Tags, newTags...)
 			blob.Tags = deduplicateTags(blob.Tags)
@@ -162,6 +198,20 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 			fmt.Printf("%s\n", string(bs))
 		}
 	}
+}
+
+func extractRelData(blob *types.Blob, encBody *types.BlobBinaryAttachment) (string, bool) {
+	relData := blob.Data
+
+	if encBody != nil {
+		plainBody, err := decryptData(encBody.Data)
+		if err != nil {
+			fmt.Errorf("Error: %s\n", err.Error())
+			return "", true
+		}
+		relData += string(plainBody)
+	}
+	return relData, false
 }
 
 // allow dashes + underscores in post names
