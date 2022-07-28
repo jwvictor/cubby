@@ -73,10 +73,10 @@ use case examples below for ideas on where to start.
 
 Some example use cases for Cubby:
 
-- [Unifying shell configs across all your computers](https://public.cubbycli.com/v1/post/jason5581/cubbyrc/view)
-- [Privacy while using work computers](https://public.cubbycli.com/v1/post/jason5581/notescompanylaptop/view)
-- [Writing a developer blog with Cubby](https://public.cubbycli.com/v1/post/jason5581/blogging-with-cubby/view)
-- [A general note on the motivation for Cubby](https://public.cubbycli.com/v1/post/jason5581/note-from-the-author/view)
+- [Unifying shell configs across all your computers](https://public.cubbycli.com/v1/post/jason/cubbyrc/view)
+- [Privacy while using work computers](https://public.cubbycli.com/v1/post/jason/notescompanylaptop/view)
+- [Writing a developer blog with Cubby](https://public.cubbycli.com/v1/post/jason/blogging-with-cubby/view)
+- [A general note on the motivation for Cubby](https://public.cubbycli.com/v1/post/jason/note-from-the-author/view)
 
 ## Installation
 
