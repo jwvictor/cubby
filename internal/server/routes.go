@@ -232,6 +232,7 @@ func (s *Server) SignUp(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, ErrInvalidRequest(err))
 		return
 	}
+	log.Printf("Signup requested for user: %s\n", data.UserEmail)
 	user, err := s.userProvider.SignUp(data.UserEmail, data.UserPassword, data.DisplayName)
 	if user != nil && err == nil {
 		resp := &types.UserResponse{
@@ -241,12 +242,23 @@ func (s *Server) SignUp(w http.ResponseWriter, r *http.Request) {
 		}
 		err := json.NewEncoder(w).Encode(resp)
 		if err != nil {
-			render.Render(w, r, ErrNotFound)
+			render.Render(w, r, ErrInternal)
 			return
 		}
 	} else {
-		render.Render(w, r, ErrNotFound)
-		return
+		if err != nil {
+			errMsg := err.Error()
+			if errMsg == "DisplayNameAlreadyExists" {
+				render.Render(w, r, ErrDisplayNameExists)
+				return
+			} else if errMsg == "UserAlreadyExists" {
+				render.Render(w, r, ErrUserExists)
+				return
+			}
+			log.Printf("Using 404 because we can't map error: %s\n", errMsg)
+			render.Render(w, r, ErrNotFound)
+			return
+		}
 	}
 }
 
@@ -679,6 +691,9 @@ func (s *Server) BlobCtx(next http.Handler) http.Handler {
 }
 
 var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
+var ErrUserExists = &ErrResponse{HTTPStatusCode: 403, StatusText: "User already exists."}
+var ErrDisplayNameExists = &ErrResponse{HTTPStatusCode: 400, StatusText: "Display name already exists."}
+var ErrInternal = &ErrResponse{HTTPStatusCode: 500, StatusText: "Internal error."}
 var ErrNameConflict = &ErrResponse{HTTPStatusCode: 409, StatusText: "Name conflict prevents insert."}
 var ErrUnauthorized = &ErrResponse{HTTPStatusCode: 401, StatusText: "User not authorized."}
 

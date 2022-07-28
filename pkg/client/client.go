@@ -213,7 +213,6 @@ func (c *CubbyClient) SignUp(displayName string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Sign up successful! You don't need it, but your user ID is: %s\n", tokens.Id)
 	return nil
 }
 

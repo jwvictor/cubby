@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sync"
+	"unicode"
 )
 
 type UserRecord struct {
@@ -98,9 +99,21 @@ func (p *UsersFileStore) GetByDisplayName(displayName string) (*User, error) {
 	return nil, errors.New("NotFound")
 }
 
+func validateDisplayName(displayName string) bool {
+	for _, r := range displayName {
+		if r != '-' && r != '_' && r != '.' && (!unicode.IsLetter(r)) && (!unicode.IsNumber(r)) {
+			return false
+		}
+	}
+	return true
+}
+
 func (p *UsersFileStore) SignUp(userEmail, userPass, displayName string) (*User, error) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
+	if !validateDisplayName(displayName) {
+		return nil, errors.New("InvalidDisplayName")
+	}
 	if _, ok := p.users[userEmail]; ok {
 		return nil, errors.New("UserAlreadyExists")
 	} else {
