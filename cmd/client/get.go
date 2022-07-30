@@ -26,10 +26,6 @@ const (
 	ViewerLoopHelpText = "\nEnter either 1.) a number to view a result, 2.) 'x' followed by a number to delete a result, or 3.) 'q' to quit.\nExamples:\n\tView item #2:\t2\n\tDelete item #2:\tx2\n\n"
 )
 
-var (
-	attachmentCmdFiles []string = nil
-)
-
 var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get a blob from Cubby",
@@ -372,70 +368,4 @@ func getAttachmentDescs(blob *types.Blob) []string {
 		}
 	}
 	return ss
-}
-
-var attachmentsCmd = &cobra.Command{
-	Use:   "attachments",
-	Short: "Manage attachments to a blob",
-	Long:  `List, download, and decrypt file attachments to Cubby blobs.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		client := getClient()
-		client.CheckVersions()
-		err := client.Authenticate()
-		if err != nil {
-			log.Printf("Error: Authentication - %s\n", err.Error())
-		}
-
-		blob, err := client.GetBlobById(args[0])
-		if err != nil {
-			log.Printf("Error: %s\n", err.Error())
-			return
-		}
-
-		var filesToDl []types.BlobBinaryAttachment
-		for _, desc := range attachmentCmdFiles {
-			file := getAttachmentByDesc(blob, desc)
-			if file == nil {
-				fmt.Printf("Error: no such file `%s` in this blob. Available files are: %s\n", desc, strings.Join(getAttachmentDescs(blob), ", "))
-				return
-			}
-			filesToDl = append(filesToDl, *file)
-		}
-
-		if len(attachmentCmdFiles) == 0 {
-			// Just print the files that exist
-			names := getAttachmentDescs(blob)
-			for i, n := range names {
-				fmt.Printf(" %d. %s\n", i+1, n)
-			}
-			return
-		}
-
-		for _, file := range filesToDl {
-			if file.Type == types.EncryptedAttachment {
-				plainBody, err := decryptData(file.Data)
-				if err != nil {
-					fmt.Printf("Error decrypting blob: %s\n", err.Error())
-					return
-				}
-				err = outputFile(plainBody, file.Description)
-				if err != nil {
-					fmt.Printf("Error writing file `%s`: %s\n", file.Description, err.Error())
-					return
-				}
-			} else {
-				err := outputFile(file.Data, file.Description)
-				if err != nil {
-					fmt.Printf("Error writing file `%s`: %s\n", file.Description, err.Error())
-					return
-				} else {
-					fmt.Printf("Successfully wrote file: %s\n", file.Description)
-				}
-			}
-		}
-	},
-}
-
-func outputFile(data []byte, filename string) error {
-	return ioutil.WriteFile(filename, data, 0644)
 }

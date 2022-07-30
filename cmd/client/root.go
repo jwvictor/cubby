@@ -19,6 +19,7 @@ const (
 	CfgConfigFile      = "config"
 	CfgViewer          = "options.viewer"
 	CfgBodyOnly        = "options.body-only"
+	CfgForce           = "options.force"
 	CfgSymmetricKey    = "crypto.symmetric-key"
 	CfgEncryptionMode  = "crypto.mode"
 
@@ -72,6 +73,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&userDisplayName, CfgUserDisplayName, "D", "Your display name", "Display name to associate with shares, etc.")
 	rootCmd.PersistentFlags().StringVarP(&userViewer, CfgViewer, "V", CfgViewerStdout, "one of viewer, stdout, editor")
 	rootCmd.PersistentFlags().BoolVarP(&bodyOnly, CfgBodyOnly, "b", false, "show body only when displaying data")
+	rootCmd.PersistentFlags().BoolVarP(&force, CfgForce, "f", false, "force a command to skip validation")
 	rootCmd.PersistentFlags().StringVarP(&userSymmetricKey, CfgSymmetricKey, "K", "", "a passphrase to use as a symmetric encryption key")
 	rootCmd.PersistentFlags().StringVarP(&useEncryption, CfgEncryptionMode, "C", "", "encryption mode")
 	viper.BindPFlag(CfgPort, rootCmd.PersistentFlags().Lookup(CfgPort))
@@ -114,6 +116,7 @@ func init() {
 	rootCmd.AddCommand(grepCmd)
 	rootCmd.AddCommand(revertCmd)
 	rootCmd.AddCommand(attachmentsCmd)
+	rootCmd.AddCommand(attachCmd)
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(signupCmd)
 	rootCmd.AddCommand(profileCmd)
