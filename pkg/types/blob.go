@@ -70,6 +70,17 @@ func (blob *Blob) EncryptedBody() *BlobBinaryAttachment {
 	return nil
 }
 
+func (blob *Blob) GetAttachment(desc string) ([]byte, bool) {
+	for _, x := range blob.RawData {
+		if x.Description == desc && x.Type == EncryptedAttachment {
+			return x.Data, true
+		} else if x.Description == desc && x.Type == Attachment {
+			return x.Data, false
+		}
+	}
+	return nil, false
+}
+
 type BlobSkeleton struct {
 	Id         string          `json:"id"`
 	Title      string          `json:"title"`

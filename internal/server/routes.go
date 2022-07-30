@@ -74,11 +74,14 @@ func mimeType(fn string) string {
 }
 
 func NewServer(portNum int, adminPass string) *Server {
+
 	usersStore, err := users.NewUsersFileStore("cubby-users.json")
 	if err != nil {
 		panic(err)
 	}
 	tokenAuth := jwtauth.New("HS256", []byte("secret"), nil)
+
+	fileCache := NewStaticCache()
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -110,7 +113,7 @@ func NewServer(portNum int, adminPass string) *Server {
 	router.Route("/static", func(staticRouter chi.Router) {
 		staticRouter.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 			fname := "./static/" + strings.TrimPrefix(r.URL.Path, "/static/")
-			bs, err := ioutil.ReadFile(fname)
+			bs, err := fileCache.Get(fname)
 			if err != nil {
 				log.Printf("Failed to open file: %s\n", fname)
 				w.WriteHeader(404)
@@ -147,6 +150,7 @@ func NewServer(portNum int, adminPass string) *Server {
 				postRouter.Use(server.PostCtx)
 				postRouter.Get("/", server.GetPost)
 				postRouter.Get("/view", server.ViewPost)
+				postRouter.Get("/file/{fileId}", server.GetPostAttachment)
 			})
 		})
 		v1Router.Route("/blobs", func(blobsRouter chi.Router) {
@@ -162,6 +166,7 @@ func NewServer(portNum int, adminPass string) *Server {
 			blobsRouter.Route("/{blobId}", func(blobRouter chi.Router) {
 				blobRouter.Use(server.BlobCtx)
 				blobRouter.Get("/", GetBlob)
+				blobRouter.Get("/file/{fileId}", GetBlobAttachment)
 				blobRouter.Delete("/", server.DeleteBlob)
 			})
 		})
@@ -528,6 +533,28 @@ func (s *Server) GetVersion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (s *Server) GetPostAttachment(w http.ResponseWriter, r *http.Request) {
+	post := r.Context().Value("post").(*types.Post)
+	relBlob := s.dataProvider.GetBlob(post.BlobId, post.OwnerId) // this has been shared to me so this is ok
+	if relBlob == nil {
+		render.Render(w, r, ErrNotFound)
+		return
+	}
+
+	if fileId := chi.URLParam(r, "fileId"); fileId != "" {
+		data, _ := relBlob.GetAttachment(fileId)
+		if data != nil {
+			_, err := w.Write(data)
+			if err != nil {
+				render.Render(w, r, ErrRender(err))
+			}
+		}
+	}
+
+	render.Render(w, r, ErrNotFound)
+
+}
+
 func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 	post := r.Context().Value("post").(*types.Post)
 	relBlob := s.dataProvider.GetBlob(post.BlobId, post.OwnerId) // this has been shared to me so this is ok
@@ -547,6 +574,25 @@ func (s *Server) GetPost(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, ErrRender(err))
 		return
 	}
+}
+
+func GetBlobAttachment(w http.ResponseWriter, r *http.Request) {
+	blob := r.Context().Value("blob").(*types.Blob)
+
+	if fileId := chi.URLParam(r, "fileId"); fileId != "" {
+		data, _ := blob.GetAttachment(fileId)
+		if data != nil {
+			_, err := w.Write(data)
+			if err != nil {
+				render.Render(w, r, ErrRender(err))
+			}
+		} else {
+			render.Render(w, r, ErrNotFound)
+			return
+		}
+	}
+
+	render.Render(w, r, ErrNotFound)
 }
 
 func GetBlob(w http.ResponseWriter, r *http.Request) {

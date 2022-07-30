@@ -11,6 +11,7 @@ require (
 	github.com/go-chi/jwtauth/v5 v5.0.2
 	github.com/go-chi/render v1.0.1
 	github.com/google/uuid v1.1.2
+	github.com/hashicorp/golang-lru v0.5.1
 	github.com/mattn/go-runewidth v0.0.13
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
