@@ -6,6 +6,10 @@ import (
 	"io/ioutil"
 )
 
+const (
+	cacheMaxFileSz = 1000 * 1000 * 25
+)
+
 type StaticCache struct {
 	cacheProvider *lru.Cache
 }
@@ -34,6 +38,8 @@ func (c *StaticCache) Get(filename string) ([]byte, error) {
 	}
 
 	// Update the cache and return
-	c.cacheProvider.Add(filename, bs)
+	if len(bs) <= cacheMaxFileSz {
+		c.cacheProvider.Add(filename, bs)
+	}
 	return bs, nil
 }
