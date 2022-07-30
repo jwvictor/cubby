@@ -3,9 +3,9 @@ package types
 import "github.com/coreos/go-semver/semver"
 
 const (
-	ClientVersion    = "0.3.1"
+	ClientVersion    = "0.3.2"
 	ClientMinVersion = "0.3.0"
-	ServerVersion    = "0.3.1"
+	ServerVersion    = "0.3.2"
 )
 
 type VersionResponse struct {
