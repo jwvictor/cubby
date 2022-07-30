@@ -47,7 +47,7 @@ func (c *CubbyClient) CheckVersions() (bool, string, error) {
 		os.Exit(1)
 		return false, versions.UpgradeScriptUrl, nil
 	} else if types.IsVersionLess(versions) {
-		fmt.Fprintf(os.Stderr, "Version %s is behind latest client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.MinClientVersion)
+		fmt.Fprintf(os.Stderr, "Version %s is behind latest client version %s. Please upgrade with `cubby upgrade`.\n", types.ClientVersion, versions.LatestClientVersion)
 		return true, versions.UpgradeScriptUrl, nil
 	}
 	return true, versions.UpgradeScriptUrl, nil
