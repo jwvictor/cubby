@@ -10,9 +10,10 @@ import (
 )
 
 var revertCmd = &cobra.Command{
-	Use:   "revert",
+	Use:   "revert blob-path",
 	Short: "Revert a blob",
 	Long:  `Reverts a blob to a prior version by specifying either its ID, path, or a substring of its title.`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()

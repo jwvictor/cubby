@@ -26,7 +26,7 @@ var publishCmd = &cobra.Command{
 }
 
 var getPublicationCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get blob-path",
 	Short: "Gets a post",
 	Long:  `Gets a posted blob, given the post ID (title) or blob ID.`,
 	Args:  cobra.MinimumNArgs(1),
@@ -131,7 +131,7 @@ func renderPosts(posts []*types.Post) {
 }
 
 var rmPublicationCmd = &cobra.Command{
-	Use:   "rm",
+	Use:   "rm post-id",
 	Short: "Delete a post",
 	Long:  `Deletes a posted blob, given the post ID (title) or blob ID.`,
 	Args:  cobra.MinimumNArgs(1),
@@ -174,7 +174,7 @@ func resolveUser(userId string, client *client.CubbyClient) (string, error) {
 }
 
 var putPublicationCmd = &cobra.Command{
-	Use:   "put",
+	Use:   "put blob-path",
 	Short: "Publish a blob from Cubby",
 	Long:  `Publish a blob, given its path or blob ID.`,
 	Args:  cobra.MinimumNArgs(1),

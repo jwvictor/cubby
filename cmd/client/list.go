@@ -21,9 +21,9 @@ func renderSkeleton(blob *types.BlobSkeleton, indent int) string {
 }
 
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List a blob from Cubby",
-	Long:  `Lists all blobs in Cubby.`,
+	Use:   "list [sub-blob]",
+	Short: "List a substructure or all blobs in Cubby",
+	Long:  `Lists all blobs or blobs under a specific path.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()

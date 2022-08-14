@@ -16,9 +16,9 @@ var (
 )
 
 var attachCmd = &cobra.Command{
-	Use:   "attach",
+	Use:   "attach blob-path file [file...]",
 	Short: "Attach a file to a blob",
-	Long:  `Adds a provided binary file to a blob using.`,
+	Long:  `Attaches a provided file to a blob.`,
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
 		blobId := args[0]
@@ -64,7 +64,7 @@ var attachCmd = &cobra.Command{
 }
 
 var attachmentsCmd = &cobra.Command{
-	Use:   "attachments",
+	Use:   "attachments blob-path",
 	Short: "Manage attachments to a blob",
 	Long:  `List, download, and decrypt file attachments to Cubby blobs.`,
 	Args:  cobra.MinimumNArgs(1),

@@ -27,9 +27,10 @@ const (
 )
 
 var getCmd = &cobra.Command{
-	Use:   "get",
+	Use:   "get blob-path",
 	Short: "Get a blob from Cubby",
 	Long:  `Gets a blob from Cubby by specifying either its ID, path, or a substring of its title.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
@@ -326,9 +327,10 @@ func resultsViewer(results []*types.Blob, client *client.CubbyClient) bool {
 }
 
 var searchCmd = &cobra.Command{
-	Use:   "search",
+	Use:   "search query...",
 	Short: "Search a blob from Cubby",
 	Long:  `Searches for a blob from Cubby by specifying a query string.`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()

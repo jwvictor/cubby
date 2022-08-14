@@ -6,7 +6,7 @@ import (
 )
 
 var catCmd = &cobra.Command{
-	Use:   "cat",
+	Use:   "cat blob-path",
 	Short: "Cat a blob from Cubby",
 	Long:  `Cats a blob from Cubby to stdout.`,
 	Args:  cobra.ExactArgs(1),

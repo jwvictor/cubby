@@ -7,9 +7,10 @@ import (
 )
 
 var rmCmd = &cobra.Command{
-	Use:   "rm",
+	Use:   "rm blob-paths...",
 	Short: "Delete a blob from Cubby",
 	Long:  `Deletes a blob from Cubby by specifying either its ID or path.`,
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			fmt.Printf("Must pass at least one argument: the blob's key, which can be an ID, path, or title substring.")

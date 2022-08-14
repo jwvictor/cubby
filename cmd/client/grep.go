@@ -13,9 +13,10 @@ var (
 )
 
 var grepCmd = &cobra.Command{
-	Use:   "grep",
-	Short: "Search for a substring",
+	Use:   "grep query-string",
+	Short: "Search for a substring in body contents",
 	Long:  `Search for a substring in blob bodies, including encrypted ones.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		client := getClient()
 		client.CheckVersions()
