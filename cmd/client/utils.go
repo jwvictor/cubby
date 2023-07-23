@@ -5,6 +5,8 @@ import (
 	"github.com/spf13/viper"
 	"regexp"
 	"strings"
+	"bufio"
+	"os"
 )
 
 func getClient() *client2.CubbyClient {
@@ -44,4 +46,19 @@ func deduplicateTags(tagArray []string) []string {
 
 	return uniqueTags
 
+}
+
+func slurpStdin() []byte {
+
+  var out []byte
+  scanner := bufio.NewScanner(os.Stdin)
+  for scanner.Scan() {
+    //fmt.Println(scanner.Text())
+    out = append(out, scanner.Bytes()...)
+  }
+
+  if scanner.Err() != nil {
+    return nil
+  }
+  return out
 }

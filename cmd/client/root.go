@@ -121,6 +121,7 @@ func init() {
 	rootCmd.AddCommand(signupCmd)
 	rootCmd.AddCommand(profileCmd)
 	rootCmd.AddCommand(pushCmd)
+	rootCmd.AddCommand(setCmd)
 	rootCmd.AddCommand(rmCmd)
 	rootCmd.AddCommand(searchCmd)
 	// Disabling TUI until we can make it better
