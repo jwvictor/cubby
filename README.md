@@ -10,6 +10,7 @@ cubby get ideas
 
 ## Main features
 * Command line-based, free, open source, cloud note-taking and storage tool
+* A [Neovim plugin](https://github.com/jwvictor/nvim-cubby) to access your Cubby blobs from the best editor ever
 * End-to-end AES-encrypted by default 
 * Share personal notes, config files, and data between your computers
 * Publish potentially sensitive data using end-to-end encrypted web sharing
