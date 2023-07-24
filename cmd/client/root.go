@@ -166,7 +166,7 @@ func initConfig() {
 		viper.SetConfigName("cubby-client")
 	}
 
-		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+  viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.SetEnvPrefix("cub") // will be uppercased automatically
 	viper.AutomaticEnv()
 
