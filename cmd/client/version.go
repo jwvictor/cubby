@@ -47,6 +47,11 @@ var upgradeCmd = &cobra.Command{
 				return
 			}
 
+      renErr := os.Rename(filepath.Join(os.Getenv("HOME"), ".cubby/bin/cubby"), filepath.Join(os.Getenv("HOME"), ".cubby/bin/cubby.old"))
+      if renErr != nil {
+        panic(renErr)
+      }
+
 			cmd := exec.Command("bash", fn)
 			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
