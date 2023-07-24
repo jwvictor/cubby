@@ -163,12 +163,12 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 				// Encrypted case
 				key, err := types.DeriveSymmetricKey(viper.GetString(CfgSymmetricKey))
 				if err != nil {
-					fmt.Errorf("Error deriving key: %s\n", err.Error())
+					fmt.Fprintf(os.Stderr, "Error deriving key: %s\n", err.Error())
 					return
 				}
 				newEncData, err := types.EncryptSymmetric([]byte(newData), key)
 				if err != nil {
-					fmt.Errorf("Error encrypting data: %s\n", err.Error())
+					fmt.Fprintf(os.Stderr,"Error encrypting data: %s\n", err.Error())
 					return
 				}
 				for i, x := range blob.RawData {
@@ -204,7 +204,7 @@ func extractRelData(blob *types.Blob, encBody *types.BlobBinaryAttachment) (stri
 	if encBody != nil {
 		plainBody, err := decryptData(encBody.Data)
 		if err != nil {
-			fmt.Errorf("Error: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Error: %s\n", err.Error())
 			return "", true
 		}
 		relData += string(plainBody)
