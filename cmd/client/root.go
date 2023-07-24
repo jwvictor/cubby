@@ -159,7 +159,6 @@ func initConfig() {
 		cubbyDir := filepath.Join(home, ".cubby")
 
 		// Search config in home directory with name ".cobra" (without extension).
-		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 		viper.AddConfigPath(".")
 		viper.AddConfigPath(home)
 		viper.AddConfigPath(cubbyDir)
@@ -167,7 +166,8 @@ func initConfig() {
 		viper.SetConfigName("cubby-client")
 	}
 
-	viper.SetEnvPrefix("CUB") // will be uppercased automatically
+		viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	viper.SetEnvPrefix("cub") // will be uppercased automatically
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {
