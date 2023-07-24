@@ -127,7 +127,8 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 		}
 		newData, err := openInEditor(relData, blob.Title, fileext)
 		if err != nil {
-			fmt.Errorf("Failed to open editor: %s\n", err.Error())
+			fmt.Fprintf(os.Stderr, "Failed to open editor: %s\n", err.Error())
+      return
 		}
 
 		if newData != relData {
@@ -215,6 +216,9 @@ func extractRelData(blob *types.Blob, encBody *types.BlobBinaryAttachment) (stri
 
 func openInEditor(data, title, fileext string) (string, error) {
 	envEditor := os.Getenv("EDITOR")
+  if envEditor == "" {
+    return "", errors.New("$EDITOR environment variable not set, but `options.viewer` is set to `editor`. Set your $EDITOR and try again; or, use `cubby cat` to print to STDOUT.")
+  }
 	var fn string
 	for _, x := range title {
 		if len(fn) >= 32 {
