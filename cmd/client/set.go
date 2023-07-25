@@ -24,10 +24,10 @@ var setCmd = &cobra.Command{
 			return
 		}
 		blob, err := client.GetBlobById(args[0])
-    if blob == nil {
-      log.Printf("No such blob: %s\n", args[0])
-      return
-    }
+		if blob == nil {
+			log.Printf("No such blob: %s\n", args[0])
+			return
+		}
 		relData := blob.Data
 		var encBody *types.BlobBinaryAttachment
 
@@ -44,9 +44,9 @@ var setCmd = &cobra.Command{
 			}
 			relData = string(relDataBs)
 		}
-		
-    // Overwrite body
-    relData = string(slurpStdin())
+
+		// Overwrite body
+		relData = string(slurpStdin())
 
 		newTags := extractTags(relData)
 		blob.Tags = append(blob.Tags, newTags...)

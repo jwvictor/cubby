@@ -1,15 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/jwvictor/cubby/pkg/types"
 	"github.com/spf13/cobra"
 	"log"
-	"encoding/json"
 )
 
 var (
-  listCmdRenderJson = false
+	listCmdRenderJson = false
 )
 
 func renderSkeleton(blob *types.BlobSkeleton, indent int) string {
@@ -26,21 +26,21 @@ func renderSkeleton(blob *types.BlobSkeleton, indent int) string {
 }
 
 func renderJson(blob *types.BlobSkeleton) string {
-  bs, err := json.Marshal(blob)
-  if err != nil {
-    return ""
-  }
-  return string(bs)
+	bs, err := json.Marshal(blob)
+	if err != nil {
+		return ""
+	}
+	return string(bs)
 }
 
 func mergeBlobs(blobs []*types.BlobSkeleton) *types.BlobSkeleton {
-  return &types.BlobSkeleton{
-    Id: "root",
-    Title: "root",
-    Tags: []string{"system"},
-    Children: blobs,
-    OwnerId: "",
-  }
+	return &types.BlobSkeleton{
+		Id:       "root",
+		Title:    "root",
+		Tags:     []string{"system"},
+		Children: blobs,
+		OwnerId:  "",
+	}
 }
 
 var listCmd = &cobra.Command{
@@ -67,13 +67,13 @@ var listCmd = &cobra.Command{
 		if err != nil {
 			log.Printf("Error: %s\n", err.Error())
 		} else {
-      if !listCmdRenderJson {
-			  for _, x := range blob {
-				  fmt.Printf(renderSkeleton(x, 1))
-		  	}
-      } else {
-        fmt.Printf(renderJson(mergeBlobs(blob)))
-      }
+			if !listCmdRenderJson {
+				for _, x := range blob {
+					fmt.Printf(renderSkeleton(x, 1))
+				}
+			} else {
+				fmt.Printf(renderJson(mergeBlobs(blob)))
+			}
 		}
 	},
 }
