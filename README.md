@@ -504,6 +504,18 @@ config file before running signup.
 
 Usage: `cubby signup`
 
+### `upgrade`
+
+Upgrades the Cubby binary to the latest version.
+
+Usage: `cubby upgrade`
+
+### `version`
+
+Shows current version information for the Cubby client.
+
+Usage: `cubby version`
+
 
 ## A note from the author
 
