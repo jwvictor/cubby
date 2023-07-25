@@ -109,6 +109,8 @@ func init() {
 
 	grepCmd.Flags().BoolVarP(&grepCaseInsensitive, "case-insensitive", "i", false, "toggle case insensitivity")
 
+  listCmd.Flags().BoolVarP(&listCmdRenderJson, "json-listing", "J", false, "get listing as JSON, e.g. for neovim plugin")
+
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(upgradeCmd)
 	rootCmd.AddCommand(getCmd)
