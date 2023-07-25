@@ -191,9 +191,9 @@ func displayBlob(blob *types.Blob, client *client.CubbyClient, viewerOverride *s
 		}
 	case CfgViewerStdout:
 		if bodyOnly {
-			fmt.Printf("%s\n", relData)
+			fmt.Printf("%s", relData)
 		} else {
-			fmt.Printf("%s\n", string(bs))
+			fmt.Printf("%s", string(bs))
 		}
 	}
 }
