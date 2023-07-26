@@ -31,8 +31,8 @@ var setCmd = &cobra.Command{
 		relData := blob.Data
 		var encBody *types.BlobBinaryAttachment
 
-		if viper.GetString(CfgEncryptionMode) == CfgEncryptionSymmetric {
-			encBody = getBlobEncryptedBody(blob)
+	  encBody = getBlobEncryptedBody(blob)
+		if viper.GetString(CfgEncryptionMode) == CfgEncryptionSymmetric && encBody != nil {
 			if encBody == nil {
 				log.Printf("Error: cannot find encrypted body\n")
 				return
@@ -53,7 +53,7 @@ var setCmd = &cobra.Command{
 		blob.Tags = deduplicateTags(blob.Tags)
 
 		// Now update
-		if viper.GetString(CfgEncryptionMode) == CfgEncryptionSymmetric {
+		if viper.GetString(CfgEncryptionMode) == CfgEncryptionSymmetric && encBody != nil  {
 			key, err := types.DeriveSymmetricKey(viper.GetString(CfgSymmetricKey))
 			if err != nil {
 				fmt.Errorf("Error deriving key: %s\n", err.Error())
